@@ -1,8 +1,9 @@
 Package: parsedate
-Title: What the package does (short line)
+Title: Recognize and parse dates in various formats
 Version: 0.1
-Authors@R: "First Last <first.last@example.com> [aut, cre]"
-Description: What the package does (paragraph)
-Depends: R (>= 3.1.1)
-License: What license is it under?
+Maintainer: Gabor Csardi <csardi.gabor@gmail.com>
+Author: Gabor Csardi, Linus Torvalds
+Description: Parse dates automatically, without the need of
+    specifying a format. Currently it includes the git date parser.
+License: GPL-2
 LazyData: true
