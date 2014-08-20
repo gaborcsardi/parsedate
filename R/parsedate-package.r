@@ -1,8 +1,10 @@
 ## --------------------------------------------------------------------
 #' Parse date from any format
 #'
-#' This package uses the date parser from the git project,
-#' see http://git-scm.com/.
+#' This package currently uses the date parser from the git project,
+#' see http://git-scm.com/. It is possible that other parser(s) will
+#' be used in the future, for example to fully support the
+#' ISO 8601 format.
 #'
 #' @docType package
 #' @name parsedate-package
