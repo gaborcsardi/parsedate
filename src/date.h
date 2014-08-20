@@ -14,5 +14,7 @@ enum date_mode {
 
 unsigned long approxidate_careful(const char *date, int *error_ret);
 enum date_mode parse_date_format(const char *format);
+int parse_date(const char *date, char *result, int maxlen);
+int parse_date_basic(const char *date, unsigned long *timestamp, int *offset);
 
 #endif

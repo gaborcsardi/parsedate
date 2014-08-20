@@ -3,10 +3,14 @@
 \alias{parse_date}
 \title{Parse date from any format}
 \usage{
-parse_date(dates)
+parse_date(dates, approx = TRUE)
 }
 \arguments{
 \item{dates}{A character vector.}
+
+\item{approx}{Logical flag, whether to try harder. If this is
+set to \code{TRUE}, then the current time is used to fill
+in the missing parts of the date and time.}
 }
 \value{
 A \code{POSIXct} vector.
