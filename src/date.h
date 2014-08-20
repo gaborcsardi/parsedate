@@ -1,0 +1,18 @@
+
+#ifndef GIT_DATE_H
+#define GIT_DATE_H
+
+enum date_mode {
+	DATE_NORMAL = 0,
+	DATE_RELATIVE,
+	DATE_SHORT,
+	DATE_LOCAL,
+	DATE_ISO8601,
+	DATE_RFC2822,
+	DATE_RAW
+};
+
+unsigned long approxidate_careful(const char *date, int *error_ret);
+enum date_mode parse_date_format(const char *format);
+
+#endif
