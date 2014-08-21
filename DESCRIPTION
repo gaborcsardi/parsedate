@@ -7,3 +7,7 @@ Description: Parse dates automatically, without the need of
     specifying a format. Currently it includes the git date parser.
 License: GPL-2
 LazyData: true
+Imports:
+    lubridate
+Suggests:
+    testthat

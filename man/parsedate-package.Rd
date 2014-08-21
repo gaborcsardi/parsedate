@@ -4,7 +4,6 @@
 \alias{parsedate-package}
 \title{Parse date from any format}
 \description{
-This package uses the date parser from the git project,
-see http://git-scm.com/.
+Parse date from any format
 }
 
