@@ -8,6 +8,8 @@ Description: Parse dates automatically, without the need of
     It can also parse recognize and parse all ISO 8601 formats.
 License: GPL-2
 LazyData: true
+Depends:
+    methods
 Imports:
     lubridate
 Suggests:
