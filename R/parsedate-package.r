@@ -279,10 +279,10 @@ parse_git <- function(dates, approx) {
 #' Format date and time according to ISO 8601
 #'
 #' Format a date in a fixed format that is ISO 8601 valid, and
-#' can be used to compare dates as character strings.
+#' can be used to compare dates as character strings. It converts
+#' the date(s) to UTC.
 #'
-#' @param date The date(s) for format
-#' @param tz Time zone.
+#' @param date The date(s) to format.
 #' @return Character vector of formatted dates.
 #'
 #' @export
@@ -295,7 +295,7 @@ parse_git <- function(dates, approx) {
 #' format_iso_8601(parse_iso_8601("2013-W06-5"))
 #' format_iso_8601(parse_iso_8601("2013-039"))
 
-format_iso_8601 <- function(date, tz = "UTC") {
+format_iso_8601 <- function(date) {
   sub("(\\d\\d)$", ":\\1",
-      format(with_tz(date, tz), "%Y-%m-%dT%H:%M:%S%z"))
+      format(with_tz(date, "UTC"), "%Y-%m-%dT%H:%M:%S%z"))
 }

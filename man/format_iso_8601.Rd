@@ -3,19 +3,18 @@
 \alias{format_iso_8601}
 \title{Format date and time according to ISO 8601}
 \usage{
-format_iso_8601(date, tz = "UTC")
+format_iso_8601(date)
 }
 \arguments{
-\item{date}{The date(s) for format}
-
-\item{tz}{Time zone.}
+\item{date}{The date(s) to format.}
 }
 \value{
 Character vector of formatted dates.
 }
 \description{
 Format a date in a fixed format that is ISO 8601 valid, and
-can be used to compare dates as character strings.
+can be used to compare dates as character strings. It converts
+the date(s) to UTC.
 }
 \examples{
 format_iso_8601(parse_iso_8601("2013-02-08"))
