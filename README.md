@@ -2,6 +2,10 @@
 
 # parsedate — Parse dates from ISO 8601, and guess the format
 
+[![Linux Build Status](https://travis-ci.org/gaborcsardi/parsedate.png?branch=master)](https://travis-ci.org/gaborcsardi/parsedate)
+[![Windows build status](https://ci.appveyor.com/api/projects/status/mgguirdgpvyx1b10)](https://ci.appveyor.com/project/gaborcsardi/parsedate)
+
+
 This R package has three functions for dealing with dates.
 
  * `parse_iso_8601` recognizes and parses all valid ISO
@@ -200,7 +204,7 @@ parse_date("04/15/99")
 ```
 
 ```
-## [1] "1999-04-15 14:09:05 UTC"
+## [1] "1999-04-15 14:19:18 UTC"
 ```
 
 ```r
@@ -208,7 +212,7 @@ parse_date("15/04/99")
 ```
 
 ```
-## [1] "1999-04-15 14:09:05 UTC"
+## [1] "1999-04-15 14:19:18 UTC"
 ```
 
 ### Ambiguous formats
@@ -221,7 +225,7 @@ parse_date("12/11/99")
 ```
 
 ```
-## [1] "1999-12-11 14:09:05 UTC"
+## [1] "1999-12-11 14:19:18 UTC"
 ```
 
 ```r
@@ -229,7 +233,7 @@ parse_date("11/12/99")
 ```
 
 ```
-## [1] "1999-11-12 14:09:05 UTC"
+## [1] "1999-11-12 14:19:18 UTC"
 ```
 
 ### Fill in the current date and time for missing fields
@@ -240,7 +244,7 @@ parse_date("03/20")
 ```
 
 ```
-## [1] "2014-03-20 14:09:05 UTC"
+## [1] "2014-03-20 14:19:18 UTC"
 ```
 
 ```r
@@ -248,7 +252,7 @@ parse_date("12")
 ```
 
 ```
-## [1] "2014-08-12 14:09:05 UTC"
+## [1] "2014-08-12 14:19:18 UTC"
 ```
 
 But not for this, because this is ISO 8601.
