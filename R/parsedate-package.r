@@ -1,5 +1,18 @@
 ## --------------------------------------------------------------------
-#' Parse date from any format
+#' Parse date from any format, including ISO 8601
+#'
+#' Three useful functions to parse and format dates.
+#' \itemize{
+#'   \item \code{\link{parse_iso_8601}} recognizes and parses all valid ISO
+#'     8601 date and time formats. It can also be used as an ISO 8601
+#'     validator.
+#'   \item \code{\link{parse_date}} can parse a date when you don't know
+#'     which format it is in. First it tries all ISO 8601 formats.
+#'     Then it tries git's versatize date parser. Lastly, it tries
+#'     \code{as.POSIXct}.
+#'   \item \code{\link{format_iso_8601}} formats a date (and time) in
+#'     a specific ISO 8601 format.
+#' }
 #'
 #' @docType package
 #' @name parsedate-package
@@ -10,13 +23,46 @@ NULL
 ## --------------------------------------------------------------------
 #' Parse date from any format
 #'
-#' @param dates A character vector.
-#' @param approx Logical flag, whether to try harder. If this is
-#'   set to \code{TRUE}, then the current time is used to fill
-#'   in the missing parts of the date and time.
-#' @return A \code{POSIXct} vector.
+#' Recognize and parse dates from a wide range of formats. The current
+#' algorithm is the following:
+#' \enumerate{
+#'   \item Try parsing dates using all valid ISO 8601 formats, by
+#'     calling \code{\link{parse_iso_8601}}.
+#'   \item If this fails, then try parsing them using the git
+#'     date parser.
+#'   \item If this fails, then try parsing them using \code{as.POSIXct}.
+#'     (It is unlikely that this step will parse any dates that the
+#'     first two steps couldn't, but it is still a logical fallback,
+#'     to make sure that we can parse at least as many dates as
+#'     \code{as.POSIXct}.
+#' }
+#'
+#' @param dates A character vector. An error is reported if
+#'   the function cannot coerce this parameter to a character vector.
+#' @param approx Logical flag, whether the git parse should try
+#'   hard(er). If this is set to \code{TRUE}, then the current time is used
+#'   to fill in the missing parts of the date and time.
+#' @return A \code{POSIXct} vector. \code{NA} is returned for
+#'   the dates that \code{parse_date} could not parse.
 #'
 #' @export
+#'
+#' @examples
+#' # Some easy examples
+#' parse_date("2014-12-12")
+#' parse_date("04/15/99")
+#' parse_date("15/04/99")
+#'
+#' # Ambiguous format, parsed assuming MM/DD/YY
+#' parse_date("12/11/99")
+#' parse_date("11/12/99")
+#'
+#' # Fill in the current date and time
+#' parse_date("03/20")
+#' parse_date("12")
+#'
+#' # But not for this, because this is ISO 8601
+#' parse_date("2014")
 
 parse_date <- function(dates, approx = TRUE) {
   result <- parse_iso_8601(dates)
@@ -29,11 +75,44 @@ parse_date <- function(dates, approx = TRUE) {
 ## --------------------------------------------------------------------
 #' Parse date from an ISO 8601 format
 #'
-#' @param dates A character vector containing the dates
-#' @return A \code{POSIXct} vector.
+#' See \url{http://en.wikipedia.org/wiki/ISO_8601} and links therein
+#' for the complete standard.
+#'
+#' @param dates A character vector. An error is reported if
+#'   the function cannot coerce this parameter to a character vector.
+#' @return A \code{POSIXct} vector. \code{NA} is returned for
+#'   the dates that \code{parse_date} could not parse.
 #'
 #' @export
 #' @importFrom lubridate with_tz
+#'
+#' @examples
+#' # Missing fields
+#' parse_iso_8601("2013-02-08 09")
+#' parse_iso_8601("2013-02-08 09:30")
+#'
+#' # Separator between date and time can be a 'T'
+#' parse_iso_8601("2013-02-08T09")
+#' parse_iso_8601("2013-02-08T09:30")
+#' parse_iso_8601("2013-02-08T09:30:26")
+#'
+#' # Fractional seconds, minutes, hours
+#' parse_iso_8601("2013-02-08T09:30:26.123")
+#' parse_iso_8601("2013-02-08T09:30.5")
+#' parse_iso_8601("2013-02-08T09,25")
+#'
+#' # Zulu time zone is UTC
+#' parse_iso_8601("2013-02-08T09:30:26Z")
+#'
+#' # ISO weeks, not very intuitive
+#' parse_iso_8601("2013-W06-5")
+#' parse_iso_8601("2013-W01-1")
+#' parse_iso_8601("2009-W01-1")
+#' parse_iso_8601("2009-W53-7")
+#'
+#' # Day of the year
+#' parse_iso_8601("2013-039")
+#' parse_iso_8601("2013-039 09:30:26Z")
 
 parse_iso_8601 <- function(dates) {
   dates <- as.character(dates)
@@ -199,9 +278,22 @@ parse_git <- function(dates, approx) {
 ## --------------------------------------------------------------------
 #' Format date and time according to ISO 8601
 #'
+#' Format a date in a fixed format that is ISO 8601 valid, and
+#' can be used to compare dates as character strings.
+#'
 #' @param date The date(s) for format
 #' @param tz Time zone.
+#' @return Character vector of formatted dates.
+#'
 #' @export
+#' @importFrom lubridate with_tz
+#'
+#' @examples
+#' format_iso_8601(parse_iso_8601("2013-02-08"))
+#' format_iso_8601(parse_iso_8601("2013-02-08 09:34:00"))
+#' format_iso_8601(parse_iso_8601("2013-02-08 09:34:00+01:00"))
+#' format_iso_8601(parse_iso_8601("2013-W06-5"))
+#' format_iso_8601(parse_iso_8601("2013-039"))
 
 format_iso_8601 <- function(date, tz = "UTC") {
   sub("(\\d\\d)$", ":\\1",

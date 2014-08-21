@@ -1,10 +1,11 @@
 Package: parsedate
-Title: Recognize and parse dates in various formats
+Title: Recognize and parse dates in various formats, includin ISO 8601
 Version: 0.1
 Maintainer: Gabor Csardi <csardi.gabor@gmail.com>
 Author: Gabor Csardi, Linus Torvalds
 Description: Parse dates automatically, without the need of
     specifying a format. Currently it includes the git date parser.
+    It can also parse recognize and parse all ISO 8601 formats.
 License: GPL-2
 LazyData: true
 Imports:

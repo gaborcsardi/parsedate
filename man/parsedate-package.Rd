@@ -2,8 +2,19 @@
 \docType{package}
 \name{parsedate-package}
 \alias{parsedate-package}
-\title{Parse date from any format}
+\title{Parse date from any format, including ISO 8601}
 \description{
-Parse date from any format
+Three useful functions to parse and format dates.
+\itemize{
+  \item \code{\link{parse_iso_8601}} recognizes and parses all valid ISO
+    8601 date and time formats. It can also be used as an ISO 8601
+    validator.
+  \item \code{\link{parse_date}} can parse a date when you don't know
+    which format it is in. First it tries all ISO 8601 formats.
+    Then it tries git's versatize date parser. Lastly, it tries
+    \code{as.POSIXct}.
+  \item \code{\link{format_iso_8601}} formats a date (and time) in
+    a specific ISO 8601 format.
+}
 }
 

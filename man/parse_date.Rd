@@ -6,16 +6,47 @@
 parse_date(dates, approx = TRUE)
 }
 \arguments{
-\item{dates}{A character vector.}
+\item{dates}{A character vector. An error is reported if
+the function cannot coerce this parameter to a character vector.}
 
-\item{approx}{Logical flag, whether to try harder. If this is
-set to \code{TRUE}, then the current time is used to fill
-in the missing parts of the date and time.}
+\item{approx}{Logical flag, whether the git parse should try
+hard(er). If this is set to \code{TRUE}, then the current time is used
+to fill in the missing parts of the date and time.}
 }
 \value{
-A \code{POSIXct} vector.
+A \code{POSIXct} vector. \code{NA} is returned for
+  the dates that \code{parse_date} could not parse.
 }
 \description{
-Parse date from any format
+Recognize and parse dates from a wide range of formats. The current
+algorithm is the following:
+\enumerate{
+  \item Try parsing dates using all valid ISO 8601 formats, by
+    calling \code{\link{parse_iso_8601}}.
+  \item If this fails, then try parsing them using the git
+    date parser.
+  \item If this fails, then try parsing them using \code{as.POSIXct}.
+    (It is unlikely that this step will parse any dates that the
+    first two steps couldn't, but it is still a logical fallback,
+    to make sure that we can parse at least as many dates as
+    \code{as.POSIXct}.
+}
+}
+\examples{
+# Some easy examples
+parse_date("2014-12-12")
+parse_date("04/15/99")
+parse_date("15/04/99")
+
+# Ambiguous format, parsed assuming MM/DD/YY
+parse_date("12/11/99")
+parse_date("11/12/99")
+
+# Fill in the current date and time
+parse_date("03/20")
+parse_date("12")
+
+# But not for this, because this is ISO 8601
+parse_date("2014")
 }
 

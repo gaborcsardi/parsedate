@@ -10,7 +10,18 @@ format_iso_8601(date, tz = "UTC")
 
 \item{tz}{Time zone.}
 }
+\value{
+Character vector of formatted dates.
+}
 \description{
-Format date and time according to ISO 8601
+Format a date in a fixed format that is ISO 8601 valid, and
+can be used to compare dates as character strings.
+}
+\examples{
+format_iso_8601(parse_iso_8601("2013-02-08"))
+format_iso_8601(parse_iso_8601("2013-02-08 09:34:00"))
+format_iso_8601(parse_iso_8601("2013-02-08 09:34:00+01:00"))
+format_iso_8601(parse_iso_8601("2013-W06-5"))
+format_iso_8601(parse_iso_8601("2013-039"))
 }
 
