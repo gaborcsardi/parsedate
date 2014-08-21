@@ -2,3 +2,5 @@
 ^scripts$
 ^.travis.yml$
 ^appveyor.yml$
+README.Rmd
+Makefile
