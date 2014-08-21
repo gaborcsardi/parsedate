@@ -17,6 +17,7 @@
 #' @docType package
 #' @name parsedate-package
 #' @useDynLib parsedate
+#' @importFrom methods reconcilePropertiesAndPrototype
 
 NULL
 
