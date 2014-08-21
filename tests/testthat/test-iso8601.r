@@ -145,3 +145,22 @@ test_that("Pelago non-matching", {
   })
 
 })
+
+context("ISO week dates")
+
+test_that("Exotic ISO week dates are OK", {
+
+  tests <- read.table(stringsAsFactors = FALSE, header = FALSE,
+                      strip.white = TRUE, row.names = NULL, sep = "|",
+                      textConnection("
+    2009-W01-1              | 2008-12-29T00:00:00+00:00
+    2009-W53-7              | 2010-01-03T00:00:00+00:00
+    2013-W06-5              | 2013-02-08T00:00:00+00:00"
+  ))
+
+  apply(tests, 1, function(x) {
+    d <- format_iso_8601(parse_iso_8601(x[1]))
+    expect_equal(d, unname(x[2]))
+  })
+
+})

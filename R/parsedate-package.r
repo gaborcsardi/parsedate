@@ -149,7 +149,7 @@ iso_regex <- paste0(
   "(?<restafteryear>(?<dash>-?)",
    "(?<dateafteryear>(?<month>0[1-9]|1[0-2])",
     "(?<dashandday>\\g{dash}(?<day>[12]\\d|0[1-9]|3[01]))?",
-    "|W(?<week>[0-4]\\d|5[0-2])(?<pmweekday>-?(?<weekday>[1-7]))?",
+    "|W(?<week>[0-4]\\d|5[0-3])(?<pmweekday>-?(?<weekday>[1-7]))?",
     "|(?<yearday>00[1-9]|0[1-9]\\d|[12]\\d{2}|3",
       "(?<yeardaytail>[0-5]\\d|6[1-6])))",
    "(?<time>[T\\s](?<hourminfrac>(?<hourmin>(?<hour>[01]\\d|2[0-3])",
