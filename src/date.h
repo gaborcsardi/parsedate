@@ -2,6 +2,9 @@
 #ifndef GIT_DATE_H
 #define GIT_DATE_H
 
+#include <time.h>
+#include "mingw.h"
+
 enum date_mode {
 	DATE_NORMAL = 0,
 	DATE_RELATIVE,

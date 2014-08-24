@@ -4,7 +4,6 @@
  * Copyright (C) Linus Torvalds, 2005
  */
 
-#include <time.h>
 #include <sys/time.h>
 #include <ctype.h>
 #include <string.h>
