@@ -938,15 +938,18 @@ static unsigned long approxidate_str(const char *date,
 	int number = 0;
 	int touched = 0;
 	struct tm tm, now;
-	time_t time_sec;
+	time_t time_sec, n;
+	int fill_mode = 1; 	/* 1: current time, 0: zero */
 
 	time_sec = tv->tv_sec;
-	localtime_r(&time_sec, &tm);
-	now = tm;
+	localtime_r(&time_sec, &now);
 
 	tm.tm_year = -1;
 	tm.tm_mon = -1;
 	tm.tm_mday = -1;
+	tm.tm_hour = -1;
+	tm.tm_min = -1;
+	tm.tm_sec = -1;
 
 	for (;;) {
 		unsigned char c = *date;
@@ -965,7 +968,41 @@ static unsigned long approxidate_str(const char *date,
 	pending_number(&tm, &number);
 	if (!touched)
 		*error_ret = 1;
-	return update_tm(&tm, &now, 0);
+
+	/* fill in missing members */
+	if (tm.tm_year < 0) {
+	        tm.tm_year = fill_mode ? now.tm_year : 0;
+	} else {
+	        fill_mode = 0;
+	}
+	if (tm.tm_mon < 0) {
+	        tm.tm_mon = fill_mode ? now.tm_mon : 0;
+	} else {
+	        fill_mode = 0;
+	}
+	if (tm.tm_mday < 0) {
+	        tm.tm_mday = fill_mode ? now.tm_mday : 1;
+	} else {
+	        fill_mode = 0;
+	}
+	if (tm.tm_hour < 0) {
+	        tm.tm_hour = fill_mode ? now.tm_hour : 0;
+	} else {
+	        fill_mode = 0;
+	}
+	if (tm.tm_min < 0) {
+	        tm.tm_min = fill_mode ? now.tm_min : 0;
+	} else {
+	        fill_mode = 0;
+	}
+	if (tm.tm_sec < 0) {
+	        tm.tm_sec = fill_mode ? now.tm_sec : 0;
+	} else {
+	        fill_mode = 0;
+	}
+
+	n = timegm(&tm);
+	return n;
 }
 
 unsigned long approxidate_relative(const char *date, const struct timeval *tv)

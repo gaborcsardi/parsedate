@@ -1,11 +1,10 @@
---- orig/src/date.c	2014-08-19 20:25:44.000000000 -0400
-+++ new/src/date.c	2014-08-19 20:26:37.000000000 -0400
-@@ -4,7 +4,20 @@
+--- orig/src/date.c	2014-08-27 12:25:53.000000000 -0400
++++ new/src/date.c	2014-08-27 14:04:01.000000000 -0400
+@@ -4,7 +4,19 @@
   * Copyright (C) Linus Torvalds, 2005
   */
  
 -#include "cache.h"
-+#include <time.h>
 +#include <sys/time.h>
 +#include <ctype.h>
 +#include <string.h>
@@ -22,7 +21,7 @@
  
  /*
   * This is like mktime, but without normalization of tm_wday and tm_yday.
-@@ -86,137 +99,6 @@
+@@ -86,137 +98,6 @@
  	return offset * eastwest;
  }
  
@@ -160,7 +159,7 @@
  /*
   * Check these. And note how it doesn't do the summer-time conversion.
   *
-@@ -763,7 +645,7 @@
+@@ -763,7 +644,7 @@
  	else if (!strcmp(format, "raw"))
  		return DATE_RAW;
  	else
@@ -169,3 +168,68 @@
  }
  
  void datestamp(char *buf, int bufsize)
+@@ -1057,15 +938,18 @@
+ 	int number = 0;
+ 	int touched = 0;
+ 	struct tm tm, now;
+-	time_t time_sec;
++	time_t time_sec, n;
++	int fill_mode = 1; 	/* 1: current time, 0: zero */
+ 
+ 	time_sec = tv->tv_sec;
+-	localtime_r(&time_sec, &tm);
+-	now = tm;
++	localtime_r(&time_sec, &now);
+ 
+ 	tm.tm_year = -1;
+ 	tm.tm_mon = -1;
+ 	tm.tm_mday = -1;
++	tm.tm_hour = -1;
++	tm.tm_min = -1;
++	tm.tm_sec = -1;
+ 
+ 	for (;;) {
+ 		unsigned char c = *date;
+@@ -1084,7 +968,41 @@
+ 	pending_number(&tm, &number);
+ 	if (!touched)
+ 		*error_ret = 1;
+-	return update_tm(&tm, &now, 0);
++
++	/* fill in missing members */
++	if (tm.tm_year < 0) {
++	        tm.tm_year = fill_mode ? now.tm_year : 0;
++	} else {
++ 	        fill_mode = 0;
++	}
++	if (tm.tm_mon < 0) {
++	        tm.tm_mon = fill_mode ? now.tm_mon : 0;
++	} else {
++	        fill_mode = 0;
++	}
++	if (tm.tm_mday < 0) {
++   	        tm.tm_mday = fill_mode ? now.tm_mday : 1;
++	} else {
++	        fill_mode = 0;
++	}
++	if (tm.tm_hour < 0) {
++	        tm.tm_hour = fill_mode ? now.tm_hour : 0;
++	} else {
++	        fill_mode = 0;
++	}
++	if (tm.tm_min < 0) {
++	        tm.tm_min = fill_mode ? now.tm_min : 0;
++	} else {
++	        fill_mode = 0;
++	}
++	if (tm.tm_sec < 0) {
++	        tm.tm_sec = fill_mode ? now.tm_sec : 0;
++	} else {
++	        fill_mode = 0;
++	}
++
++	n = timegm(&tm);
++	return n;
+ }
+ 
+ unsigned long approxidate_relative(const char *date, const struct timeval *tv)
