@@ -1,5 +1,5 @@
---- orig/src/date.c	2014-08-27 12:25:53.000000000 -0400
-+++ new/src/date.c	2014-08-27 14:04:01.000000000 -0400
+--- orig/src/date.c	2014-08-27 14:41:24.000000000 -0400
++++ new/src/date.c	2014-08-27 14:41:12.000000000 -0400
 @@ -4,7 +4,19 @@
   * Copyright (C) Linus Torvalds, 2005
   */
@@ -168,7 +168,7 @@
  }
  
  void datestamp(char *buf, int bufsize)
-@@ -1057,15 +938,18 @@
+@@ -1057,7 +938,8 @@
  	int number = 0;
  	int touched = 0;
  	struct tm tm, now;
@@ -177,10 +177,8 @@
 +	int fill_mode = 1; 	/* 1: current time, 0: zero */
  
  	time_sec = tv->tv_sec;
--	localtime_r(&time_sec, &tm);
--	now = tm;
-+	localtime_r(&time_sec, &now);
- 
+ 	localtime_r(&time_sec, &tm);
+@@ -1066,6 +948,9 @@
  	tm.tm_year = -1;
  	tm.tm_mon = -1;
  	tm.tm_mday = -1;
@@ -190,7 +188,7 @@
  
  	for (;;) {
  		unsigned char c = *date;
-@@ -1084,7 +968,41 @@
+@@ -1084,7 +969,43 @@
  	pending_number(&tm, &number);
  	if (!touched)
  		*error_ret = 1;
@@ -200,7 +198,7 @@
 +	if (tm.tm_year < 0) {
 +	        tm.tm_year = fill_mode ? now.tm_year : 0;
 +	} else {
-+ 	        fill_mode = 0;
++	        fill_mode = 0;
 +	}
 +	if (tm.tm_mon < 0) {
 +	        tm.tm_mon = fill_mode ? now.tm_mon : 0;
@@ -208,7 +206,7 @@
 +	        fill_mode = 0;
 +	}
 +	if (tm.tm_mday < 0) {
-+   	        tm.tm_mday = fill_mode ? now.tm_mday : 1;
++	        tm.tm_mday = fill_mode ? now.tm_mday : 1;
 +	} else {
 +	        fill_mode = 0;
 +	}
@@ -228,8 +226,10 @@
 +	        fill_mode = 0;
 +	}
 +
-+	n = timegm(&tm);
-+	return n;
++	/* Fill in missing fields */
++	n = mktime(&tm);
++	localtime_r(&n, &tm);
++	return n + tm.tm_gmtoff;
  }
  
  unsigned long approxidate_relative(const char *date, const struct timeval *tv)

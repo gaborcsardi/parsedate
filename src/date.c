@@ -942,7 +942,8 @@ static unsigned long approxidate_str(const char *date,
 	int fill_mode = 1; 	/* 1: current time, 0: zero */
 
 	time_sec = tv->tv_sec;
-	localtime_r(&time_sec, &now);
+	localtime_r(&time_sec, &tm);
+	now = tm;
 
 	tm.tm_year = -1;
 	tm.tm_mon = -1;
@@ -1001,8 +1002,10 @@ static unsigned long approxidate_str(const char *date,
 	        fill_mode = 0;
 	}
 
-	n = timegm(&tm);
-	return n;
+	/* Fill in missing fields */
+	n = mktime(&tm);
+	localtime_r(&n, &tm);
+	return n + tm.tm_gmtoff;
 }
 
 unsigned long approxidate_relative(const char *date, const struct timeval *tv)
