@@ -18,3 +18,7 @@ struct tm *localtime_r(const time_t *timep, struct tm *result)
 }
 
 #endif
+
+void R_parsedate_shut_up_about_empty_translation_unit() {
+  "Here! Better?";
+}
