@@ -1004,8 +1004,7 @@ static unsigned long approxidate_str(const char *date,
 
 	/* Fill in missing fields */
 	n = mktime(&tm);
-	localtime_r(&n, &tm);
-	return n + tm.tm_gmtoff;
+	return gm_time_t(n, local_tzoffset(n));
 }
 
 unsigned long approxidate_relative(const char *date, const struct timeval *tv)

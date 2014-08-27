@@ -1,5 +1,5 @@
 --- orig/src/date.c	2014-08-27 14:41:24.000000000 -0400
-+++ new/src/date.c	2014-08-27 14:41:12.000000000 -0400
++++ new/src/date.c	2014-08-27 15:30:01.000000000 -0400
 @@ -4,7 +4,19 @@
   * Copyright (C) Linus Torvalds, 2005
   */
@@ -188,7 +188,7 @@
  
  	for (;;) {
  		unsigned char c = *date;
-@@ -1084,7 +969,43 @@
+@@ -1084,7 +969,42 @@
  	pending_number(&tm, &number);
  	if (!touched)
  		*error_ret = 1;
@@ -228,8 +228,7 @@
 +
 +	/* Fill in missing fields */
 +	n = mktime(&tm);
-+	localtime_r(&n, &tm);
-+	return n + tm.tm_gmtoff;
++	return gm_time_t(n, local_tzoffset(n));
  }
  
  unsigned long approxidate_relative(const char *date, const struct timeval *tv)
