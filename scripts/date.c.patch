@@ -1,5 +1,5 @@
---- orig/src/date.c	2014-08-27 14:41:24.000000000 -0400
-+++ new/src/date.c	2014-08-27 15:30:01.000000000 -0400
+--- orig/src/date.c	2014-08-27 19:35:01.000000000 -0400
++++ new/src/date.c	2014-08-27 20:09:41.000000000 -0400
 @@ -4,7 +4,19 @@
   * Copyright (C) Linus Torvalds, 2005
   */
@@ -21,7 +21,25 @@
  
  /*
   * This is like mktime, but without normalization of tm_wday and tm_yday.
-@@ -86,137 +98,6 @@
+@@ -50,17 +62,6 @@
+ }
+ 
+ /*
+- * The "tz" thing is passed in as this strange "decimal parse of tz"
+- * thing, which means that tz -0100 is passed in as the integer -100,
+- * even though it means "sixty minutes off"
+- */
+-static struct tm *time_to_tm(unsigned long time, int tz)
+-{
+-	time_t t = gm_time_t(time, tz);
+-	return gmtime(&t);
+-}
+-
+-/*
+  * What value of "tz" was in effect back then at "time" in the
+  * local timezone?
+  */
+@@ -86,137 +87,6 @@
  	return offset * eastwest;
  }
  
@@ -159,7 +177,7 @@
  /*
   * Check these. And note how it doesn't do the summer-time conversion.
   *
-@@ -763,7 +644,7 @@
+@@ -763,7 +633,7 @@
  	else if (!strcmp(format, "raw"))
  		return DATE_RAW;
  	else
@@ -168,7 +186,7 @@
  }
  
  void datestamp(char *buf, int bufsize)
-@@ -1057,7 +938,8 @@
+@@ -1057,7 +927,8 @@
  	int number = 0;
  	int touched = 0;
  	struct tm tm, now;
@@ -178,7 +196,7 @@
  
  	time_sec = tv->tv_sec;
  	localtime_r(&time_sec, &tm);
-@@ -1066,6 +948,9 @@
+@@ -1066,6 +937,9 @@
  	tm.tm_year = -1;
  	tm.tm_mon = -1;
  	tm.tm_mday = -1;
@@ -188,7 +206,7 @@
  
  	for (;;) {
  		unsigned char c = *date;
-@@ -1084,7 +969,42 @@
+@@ -1084,7 +958,42 @@
  	pending_number(&tm, &number);
  	if (!touched)
  		*error_ret = 1;

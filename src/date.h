@@ -3,6 +3,7 @@
 #define GIT_DATE_H
 
 #include <time.h>
+#include <string.h>
 #include "mingw.h"
 
 enum date_mode {

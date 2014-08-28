@@ -62,17 +62,6 @@ static time_t gm_time_t(unsigned long time, int tz)
 }
 
 /*
- * The "tz" thing is passed in as this strange "decimal parse of tz"
- * thing, which means that tz -0100 is passed in as the integer -100,
- * even though it means "sixty minutes off"
- */
-static struct tm *time_to_tm(unsigned long time, int tz)
-{
-	time_t t = gm_time_t(time, tz);
-	return gmtime(&t);
-}
-
-/*
  * What value of "tz" was in effect back then at "time" in the
  * local timezone?
  */
