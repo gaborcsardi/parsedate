@@ -297,6 +297,5 @@ parse_git <- function(dates, approx) {
 #' format_iso_8601(parse_iso_8601("2013-039"))
 
 format_iso_8601 <- function(date) {
-  sub("(\\d\\d)$", ":\\1",
-      format(with_tz(date, "UTC"), "%Y-%m-%dT%H:%M:%S%z"))
+  format(with_tz(date, "UTC"), "%Y-%m-%dT%H:%M:%S+00:00")
 }
