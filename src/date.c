@@ -402,6 +402,49 @@ static int match_digit(const char *date, struct tm *tm, int *offset, int *tm_gmt
 	}
 
 	/*
+	 * If it has eight digits, then we pretend that it has dashes
+	 * in a XXXX-XX-XX format
+	 */
+	if (n == 8) {
+	        char xx[11];
+		int match;
+		xx[0] = date[0];
+		xx[1] = date[1];
+		xx[2] = date[2];
+		xx[3] = date[3];
+		xx[4] = '-';
+		xx[5] = date[4];
+		xx[6] = date[5];
+		xx[7] = '-';
+		xx[8] = date[6];
+		xx[9] = date[7];
+		xx[10] = '\0';
+		match = match_multi_number(num / 10000, xx[4], xx, xx + 4, tm);
+		if (match - 2 >= 0)
+		        return match - 2;
+	}
+
+	/* If it has six digits, then we pretend that it has dashes in
+	 * a XX-XX-XX format
+	 */
+	if (n == 6) {
+	        char xx[9];
+		int match;
+		xx[0] = date[0];
+		xx[1] = date[1];
+		xx[2] = '-';
+		xx[3] = date[2];
+		xx[4] = date[3];
+		xx[5] = '-';
+		xx[6] = date[4];
+		xx[7] = date[5];
+		xx[8] = '\0';
+		match = match_multi_number(num / 10000, xx[2], xx, xx + 2, tm);
+		if (match - 2 >= 0)
+		        return match - 2;
+	}
+
+	/*
 	 * Ignore lots of numerals. We took care of 4-digit years above.
 	 * Days or months must be one or two digits.
 	 */
@@ -886,6 +929,50 @@ static const char *approxidate_digit(const char *date, struct tm *tm, int *num)
 				return date + match;
 		}
 	}
+
+	/*
+	 * If it has eight digits, then we pretend that it has dashes
+	 * in a XXXX-XX-XX format
+	 */
+	if (end - date == 8) {
+	        char xx[11];
+		int match;
+		xx[0] = date[0];
+		xx[1] = date[1];
+		xx[2] = date[2];
+		xx[3] = date[3];
+		xx[4] = '-';
+		xx[5] = date[4];
+		xx[6] = date[5];
+		xx[7] = '-';
+		xx[8] = date[6];
+		xx[9] = date[7];
+		xx[10] = '\0';
+		match = match_multi_number(number / 10000, xx[4], xx, xx + 4, tm);
+		if (match - 2 >= 0)
+		        return date + match - 2;
+	}
+
+	/* If it has six digits, then we pretend that it has dashes in
+	 * a XX-XX-XX format
+	 */
+	if (end - date == 6) {
+	        char xx[9];
+		int match;
+		xx[0] = date[0];
+		xx[1] = date[1];
+		xx[2] = '-';
+		xx[3] = date[2];
+		xx[4] = date[3];
+		xx[5] = '-';
+		xx[6] = date[4];
+		xx[7] = date[5];
+		xx[8] = '\0';
+		match = match_multi_number(number / 10000, xx[2], xx, xx + 2, tm);
+		if (match - 2 >= 0)
+		        return date + match - 2;
+	}
+
 
 	/* Accept zero-padding only for small numbers ("Dec 02", never "Dec 0002") */
 	if (date[0] != '0' || end - date <= 2)

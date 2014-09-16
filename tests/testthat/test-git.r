@@ -12,3 +12,23 @@ test_that("Filling in is correct", {
                paste0(current_year, "-08-21T15:50:00+00:00"))
 
 })
+
+test_that("Issue #3 is resolved", {
+
+  d1 <- parse_date("070809")
+  d2 <- parse_date("07-08-09")
+  expect_equal(d1, d2)
+
+  d1 <- parse_date("20071211")
+  d2 <- parse_date("2007-12-11")
+  expect_equal(d1, d2)
+
+  d1 <- parse_date("070809 14:35:42")
+  d2 <- parse_date("07-08-09 14:35:42")
+  expect_equal(d1, d2)
+
+  d1 <- parse_date("20070809 14:35:42")
+  d2 <- parse_date("2007-08-09 14:35:42")
+  expect_equal(d1, d2)
+  
+})

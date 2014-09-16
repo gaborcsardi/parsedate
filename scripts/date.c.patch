@@ -1,5 +1,5 @@
---- orig/src/date.c	2014-08-27 19:35:01.000000000 -0400
-+++ new/src/date.c	2014-08-27 20:09:41.000000000 -0400
+--- old/src/date.c	2014-09-16 15:11:21.000000000 -0400
++++ new/src/date.c	2014-09-16 16:08:48.000000000 -0400
 @@ -4,7 +4,19 @@
   * Copyright (C) Linus Torvalds, 2005
   */
@@ -177,7 +177,57 @@
  /*
   * Check these. And note how it doesn't do the summer-time conversion.
   *
-@@ -763,7 +633,7 @@
+@@ -532,6 +402,49 @@
+ 	}
+ 
+ 	/*
++	 * If it has eight digits, then we pretend that it has dashes
++	 * in a XXXX-XX-XX format
++	 */
++	if (n == 8) {
++	        char xx[11];
++		int match;
++		xx[0] = date[0];
++		xx[1] = date[1];
++		xx[2] = date[2];
++		xx[3] = date[3];
++		xx[4] = '-';
++		xx[5] = date[4];
++		xx[6] = date[5];
++		xx[7] = '-';
++		xx[8] = date[6];
++		xx[9] = date[7];
++		xx[10] = '\0';
++		match = match_multi_number(num / 10000, xx[4], xx, xx + 4, tm);
++		if (match - 2 >= 0)
++		        return match - 2;
++	}
++
++	/* If it has six digits, then we pretend that it has dashes in
++	 * a XX-XX-XX format
++	 */
++	if (n == 6) {
++	        char xx[9];
++		int match;
++		xx[0] = date[0];
++		xx[1] = date[1];
++		xx[2] = '-';
++		xx[3] = date[2];
++		xx[4] = date[3];
++		xx[5] = '-';
++		xx[6] = date[4];
++		xx[7] = date[5];
++		xx[8] = '\0';
++		match = match_multi_number(num / 10000, xx[2], xx, xx + 2, tm);
++		if (match - 2 >= 0)
++		        return match - 2;
++	}
++
++	/*
+ 	 * Ignore lots of numerals. We took care of 4-digit years above.
+ 	 * Days or months must be one or two digits.
+ 	 */
+@@ -763,7 +676,7 @@
  	else if (!strcmp(format, "raw"))
  		return DATE_RAW;
  	else
@@ -186,7 +236,58 @@
  }
  
  void datestamp(char *buf, int bufsize)
-@@ -1057,7 +927,8 @@
+@@ -1017,6 +930,50 @@
+ 		}
+ 	}
+ 
++	/*
++	 * If it has eight digits, then we pretend that it has dashes
++	 * in a XXXX-XX-XX format
++	 */
++	if (end - date == 8) {
++	        char xx[11];
++		int match;
++		xx[0] = date[0];
++		xx[1] = date[1];
++		xx[2] = date[2];
++		xx[3] = date[3];
++		xx[4] = '-';
++		xx[5] = date[4];
++		xx[6] = date[5];
++		xx[7] = '-';
++		xx[8] = date[6];
++		xx[9] = date[7];
++		xx[10] = '\0';
++		match = match_multi_number(number / 10000, xx[4], xx, xx + 4, tm);
++		if (match - 2 >= 0)
++		        return date + match - 2;
++	}
++
++	/* If it has six digits, then we pretend that it has dashes in
++	 * a XX-XX-XX format
++	 */
++	if (end - date == 6) {
++	        char xx[9];
++		int match;
++		xx[0] = date[0];
++		xx[1] = date[1];
++		xx[2] = '-';
++		xx[3] = date[2];
++		xx[4] = date[3];
++		xx[5] = '-';
++		xx[6] = date[4];
++		xx[7] = date[5];
++		xx[8] = '\0';
++		match = match_multi_number(number / 10000, xx[2], xx, xx + 2, tm);
++		if (match - 2 >= 0)
++		        return date + match - 2;
++	}
++
++
+ 	/* Accept zero-padding only for small numbers ("Dec 02", never "Dec 0002") */
+ 	if (date[0] != '0' || end - date <= 2)
+ 		*num = number;
+@@ -1057,7 +1014,8 @@
  	int number = 0;
  	int touched = 0;
  	struct tm tm, now;
@@ -196,7 +297,7 @@
  
  	time_sec = tv->tv_sec;
  	localtime_r(&time_sec, &tm);
-@@ -1066,6 +937,9 @@
+@@ -1066,6 +1024,9 @@
  	tm.tm_year = -1;
  	tm.tm_mon = -1;
  	tm.tm_mday = -1;
@@ -206,7 +307,7 @@
  
  	for (;;) {
  		unsigned char c = *date;
-@@ -1084,7 +958,42 @@
+@@ -1084,7 +1045,42 @@
  	pending_number(&tm, &number);
  	if (!touched)
  		*error_ret = 1;
