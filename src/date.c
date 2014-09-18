@@ -579,7 +579,7 @@ int parse_date_basic(const char *date, unsigned long *timestamp, int *offset)
 	tm.tm_min = -1;
 	tm.tm_sec = -1;
 	*offset = -1;
-	tm_gmt = 0;
+	tm_gmt = 1;
 
 	if (*date == '@' &&
 	    !match_object_header_date(date + 1, timestamp, offset))

@@ -1,5 +1,5 @@
---- old/src/date.c	2014-09-18 14:21:53.000000000 -0400
-+++ new/src/date.c	2014-09-18 14:21:11.000000000 -0400
+--- old/src/date.c	2014-09-18 14:25:26.000000000 -0400
++++ new/src/date.c	2014-09-18 15:03:06.000000000 -0400
 @@ -4,7 +4,19 @@
   * Copyright (C) Linus Torvalds, 2005
   */
@@ -227,6 +227,15 @@
  	 * Ignore lots of numerals. We took care of 4-digit years above.
  	 * Days or months must be one or two digits.
  	 */
+@@ -666,7 +579,7 @@
+ 	tm.tm_min = -1;
+ 	tm.tm_sec = -1;
+ 	*offset = -1;
+-	tm_gmt = 0;
++	tm_gmt = 1;
+ 
+ 	if (*date == '@' &&
+ 	    !match_object_header_date(date + 1, timestamp, offset))
 @@ -763,7 +676,7 @@
  	else if (!strcmp(format, "raw"))
  		return DATE_RAW;
