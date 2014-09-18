@@ -1022,7 +1022,7 @@ static unsigned long approxidate_str(const char *date,
 	int number = 0;
 	int touched = 0;
 	struct tm tm, now;
-	time_t time_sec, n;
+	time_t time_sec, n, dst = 0;
 	int fill_mode = 1; 	/* 1: current time, 0: zero */
 
 	time_sec = tv->tv_sec;
@@ -1087,7 +1087,12 @@ static unsigned long approxidate_str(const char *date,
 
 	/* Fill in missing fields */
 	n = mktime(&tm);
-	return gm_time_t(n, local_tzoffset(n));
+
+	/* Fix for non-dst */
+	if (!tm.tm_isdst)
+	        dst = 100;
+
+	return gm_time_t(n, local_tzoffset(n) + dst);
 }
 
 unsigned long approxidate_relative(const char *date, const struct timeval *tv)
