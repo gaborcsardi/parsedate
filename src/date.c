@@ -913,7 +913,7 @@ static const char *approxidate_alpha(const char *date, struct tm *tm, struct tm 
 	return end;
 }
 
-static const char *approxidate_digit(const char *date, struct tm *tm, int *num)
+static const char *approxidate_digit(const char *date, struct tm *tm, int *num, int *touched)
 {
 	char *end;
 	unsigned long number = strtoul(date, &end, 10);
@@ -925,8 +925,10 @@ static const char *approxidate_digit(const char *date, struct tm *tm, int *num)
 	case '-':
 		if (isdigit(end[1])) {
 			int match = match_multi_number(number, *end, date, end, tm);
-			if (match)
+			if (match) {
+			        *touched = 1;
 				return date + match;
+			}
 		}
 	}
 
@@ -949,8 +951,10 @@ static const char *approxidate_digit(const char *date, struct tm *tm, int *num)
 		xx[9] = date[7];
 		xx[10] = '\0';
 		match = match_multi_number(number / 10000, xx[4], xx, xx + 4, tm);
-		if (match - 2 >= 0)
+		if (match - 2 >= 0) {
+		        *touched = 1;
 		        return date + match - 2;
+		}
 	}
 
 	/* If it has six digits, then we pretend that it has dashes in
@@ -969,14 +973,18 @@ static const char *approxidate_digit(const char *date, struct tm *tm, int *num)
 		xx[7] = date[5];
 		xx[8] = '\0';
 		match = match_multi_number(number / 10000, xx[2], xx, xx + 2, tm);
-		if (match - 2 >= 0)
+		if (match - 2 >= 0) {
+		        *touched = 1;
 		        return date + match - 2;
+		}
 	}
 
 
 	/* Accept zero-padding only for small numbers ("Dec 02", never "Dec 0002") */
-	if (date[0] != '0' || end - date <= 2)
+	if (date[0] != '0' || end - date <= 2) {
+	        *touched = 1;
 		*num = number;
+	}
 	return end;
 }
 
@@ -1035,8 +1043,7 @@ static unsigned long approxidate_str(const char *date,
 		date++;
 		if (isdigit(c)) {
 			pending_number(&tm, &number);
-			date = approxidate_digit(date-1, &tm, &number);
-			touched = 1;
+			date = approxidate_digit(date-1, &tm, &number, &touched);
 			continue;
 		}
 		if (isalpha(c))

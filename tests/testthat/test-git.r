@@ -32,3 +32,10 @@ test_that("Issue #3 is resolved", {
   expect_equal(d1, d2)
   
 })
+
+test_that("Issue #4 is resolved", {
+
+  d1 <- parse_date("000102")
+  expect_equal(d1, as.POSIXct(NA))
+
+})
