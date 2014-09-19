@@ -21,6 +21,22 @@
 
 NULL
 
+## Some simple utility functions. We used to take them from lubridate,
+## but that brings in plyr, Rcpp, etc. Better to keep dependencies light.
+## These are of course not general replacements for lubridate functions,
+## but they suffice for our purposes.
+
+milliseconds <- function(x) as.difftime(as.numeric(x) / 1000, units = "secs")
+seconds <- function(x) as.difftime(as.numeric(x), units = "secs")
+minutes <- function(x) as.difftime(as.numeric(x), units = "mins")
+hours <- function(x) as.difftime(as.numeric(x), units = "hours")
+days <- function(x) as.difftime(as.numeric(x), units = "days")
+weeks <- function(x) as.difftime(as.numeric(x), units = "weeks")
+wday <- function(x) as.POSIXlt(x, tz = "UTC")$wday + 1
+with_tz <- function(x, tzone = "") as.POSIXct(as.POSIXlt(x, tz = tzone))
+ymd <- function(x) as.POSIXct(x, format = "%Y %m %d", tz = "UTC")
+yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
+
 ## --------------------------------------------------------------------
 #' Parse date from any format
 #'
@@ -47,7 +63,6 @@ NULL
 #'   the dates that \code{parse_date} could not parse.
 #'
 #' @export
-#'
 #' @examples
 #' # Some easy examples
 #' parse_date("2014-12-12")
@@ -85,8 +100,6 @@ parse_date <- function(dates, approx = TRUE) {
 #'   the dates that \code{parse_date} could not parse.
 #'
 #' @export
-#' @importFrom lubridate with_tz
-#'
 #' @examples
 #' # Missing fields
 #' parse_iso_8601("2013-02-08 09")
@@ -161,19 +174,16 @@ iso_regex <- paste0(
      "(?<tzhour>[01]\\d|2[0-3]):?(?<tzmin>[0-5]\\d)?)?)?)?$"
   )
 
-#' @importFrom lubridate parse_date_time "tz<-" minutes hours
-#'   seconds milliseconds
-
 parse_iso_single <- function(match) {
   parts <- structure(match[,3], names = rownames(match))
   ## Date first
 
   ## Years-days?
   date <- if (parts["yearday"] != "") {
-    parse_date_time(paste(
+    yj(paste(
       parts["year"],
       parts["yearday"]
-      ), orders = "Y! j"
+      )
     )
 
   ## Years-weeks-days?
@@ -186,26 +196,29 @@ parse_iso_single <- function(match) {
 
   ## Years-months-days
   } else if (parts["month"] != "" && parts["day"] != "") {
-    parse_date_time(paste(
+    ymd(paste(
       parts["year"],
       parts["month"],
       parts["day"]
-      ), orders = "Y! m*! d!"
+      )
     )
 
   ## Years-months
   } else if (parts["month"] != "") {
-    parse_date_time(paste(
+    ymd(paste(
       parts["year"],
-      parts["month"]
-      ), orders = "Y! m*!"
+      parts["month"],
+      "01"
+      )
     )
 
   ## Years
   } else {
-    parse_date_time(paste(
-      parts["year"]
-      ), orders = "Y!"
+    ymd(paste(
+      parts["year"],
+      "01",
+      "01"
+      )
     )
   }
 
@@ -239,22 +252,19 @@ parse_iso_single <- function(match) {
     m <- if (parts["tzpm"] == "+") -1 else 1
     if (parts["tzhour"] != "") { date <- date + m * hours(parts["tzhour"]) }
     if (parts["tzmin"] != "") { date <- date + m * minutes(parts["tzmin"]) }
-    tz(date) <- "UTC"
+    date <- as.POSIXct(date, "UTC")
   } else if (parts["tz"] != "") {
     if (parts["tz"] == "Z") {
-      tz(date) <- "UTC"
+      date <- as.POSIXct(date, "UTC")
     } else {
-      tz(date) <- parts["tz"]
+      date <- as.POSIXct(date, parts["tz"])
     }
   } else {
-    tz(date) <- "UTC"
+    date <- as.POSIXct(date, "UTC")
   }
 
   date
 }
-
-#' @importFrom lubridate ymd wday days weeks
-NULL
 
 iso_week <- function(year, week, weekday) {
 
@@ -287,8 +297,6 @@ parse_git <- function(dates, approx) {
 #' @return Character vector of formatted dates.
 #'
 #' @export
-#' @importFrom lubridate with_tz
-#'
 #' @examples
 #' format_iso_8601(parse_iso_8601("2013-02-08"))
 #' format_iso_8601(parse_iso_8601("2013-02-08 09:34:00"))
@@ -297,5 +305,5 @@ parse_git <- function(dates, approx) {
 #' format_iso_8601(parse_iso_8601("2013-039"))
 
 format_iso_8601 <- function(date) {
-  format(with_tz(date, "UTC"), "%Y-%m-%dT%H:%M:%S+00:00")
+  format(as.POSIXlt(date, tz = "UTC"), "%Y-%m-%dT%H:%M:%S+00:00")
 }
