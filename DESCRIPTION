@@ -11,8 +11,6 @@ License: GPL-2
 LazyData: true
 Depends:
     methods
-Imports:
-    lubridate
 Suggests:
     testthat
 URL: https://github.com/gaborcsardi/parsedate
