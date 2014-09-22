@@ -1,6 +1,6 @@
 library(testthat)
 library(parsedate)
 
-if (Sys.getenv("_R_CHECK_TIMINGS_") == "") {
+if (Sys.getenv("NOT_CRAN") != "") {
   test_check("parsedate")
 }
