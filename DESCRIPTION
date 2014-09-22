@@ -1,7 +1,7 @@
 Package: parsedate
 Title: Recognize and parse dates in various formats, including all ISO 8601
     formats
-Version: 1.0.3
+Version: 1.1.0
 Maintainer: Gabor Csardi <csardi.gabor@gmail.com>
 Author: Gabor Csardi, Linus Torvalds
 Description: Parse dates automatically, without the need of
