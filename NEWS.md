@@ -1,5 +1,5 @@
 
-# Parsedate 1.1.0
+# Parsedate 1.1.1
 
 * Drop `lubridate` package dependency
 
