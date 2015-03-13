@@ -151,7 +151,7 @@ regexp_to_df <- function(text, match) {
   lapply(seq_len(sum(positive)), function(i) {
     data.frame(start = g_start[i,],
                length = g_length[i,],
-               match = substring(text[i], g_start[i,],
+               match = substring(g_text[i], g_start[i,],
                  g_start[i,] + g_length[i,] - 1),
                stringsAsFactors = FALSE)
   })
