@@ -46,7 +46,7 @@ test_that("Examples from moment.js", {
 
   apply(tests, 1, function(x) {
     d <- format_iso_8601(parse_iso_8601(x[1]))
-    expect_equal(d, unname(x[2]))
+    expect_equal(d, unname(x[2]), info = x[1])
   })
 
 })
