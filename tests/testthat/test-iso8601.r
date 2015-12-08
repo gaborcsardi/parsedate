@@ -140,7 +140,7 @@ test_that("Pelago non-matching", {
   ))
 
   apply(tests, 1, function(x) {
-    d <- format_iso_8601(parse_iso_8601(x[1]))
+    d <- parse_iso_8601(x[1])
     expect_equal(d, as.POSIXct(NA))
   })
 
