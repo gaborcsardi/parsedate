@@ -1089,8 +1089,10 @@ static unsigned long approxidate_str(const char *date,
 	n = mktime(&tm);
 
 	/* Fix for non-dst */
-	if (!tm.tm_isdst)
+	if (! tm.tm_isdst && now.tm_isdst)
 	        dst = 100;
+	else if (tm.tm_isdst && ! now.tm_isdst)
+	        dst = -100;
 
 	return gm_time_t(n, local_tzoffset(n) + dst);
 }
