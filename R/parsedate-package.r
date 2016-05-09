@@ -132,7 +132,7 @@ parse_iso_8601 <- function(dates) {
   dates <- as.character(dates)
   match <- regexpr(iso_regex, dates, perl = TRUE)
   matching <- sapply(match, function(x)
-    ! identical(x, -1L) && ! identical(x, -1))
+    ! identical(x, -1L) & ! identical(x, -1))
   match_list <- regexp_to_df(dates, match)
   result <- rep(NA_real_, length(dates))
   result[matching] <- sapply(match_list, parse_iso_single)

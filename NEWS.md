@@ -1,4 +1,8 @@
 
+# Parsedate 1.1.2
+
+* Fix a vectorization bug in the ISO 8601 date parser
+
 # Parsedate 1.1.1
 
 * Drop `lubridate` package dependency
