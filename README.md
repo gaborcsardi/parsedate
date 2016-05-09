@@ -4,7 +4,9 @@
 
 [![Linux Build Status](https://travis-ci.org/gaborcsardi/parsedate.svg?branch=master)](https://travis-ci.org/gaborcsardi/parsedate)
 [![Windows build status](https://ci.appveyor.com/api/projects/status/github/gaborcsardi/parsedate?svg=true)](https://ci.appveyor.com/project/gaborcsardi/parsedate)
+[![](http://www.r-pkg.org/badges/version/parsedate)](http://www.r-pkg.org/pkg/parsedate)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/parsedate)](http://cran.r-project.org/web/packages/parsedate/index.html)
+[![Coverage Status](https://img.shields.io/codecov/c/github/gaborcsardi/parsedate/master.svg)](https://codecov.io/github/gaborcsardi/parsedate?branch=master)
 
 This R package has three functions for dealing with dates.
 
@@ -244,7 +246,7 @@ parse_date("03/20")
 ```
 
 ```
-## [1] "2015-03-20 UTC"
+## [1] "2016-03-20 UTC"
 ```
 
 ```r
@@ -252,7 +254,7 @@ parse_date("12")
 ```
 
 ```
-## [1] "2015-04-12 UTC"
+## [1] "2016-05-12 UTC"
 ```
 
 But not for this, because this is ISO 8601.

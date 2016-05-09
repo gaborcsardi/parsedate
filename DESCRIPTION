@@ -12,6 +12,7 @@ LazyData: true
 Depends:
     methods
 Suggests:
+    covr,
     testthat
 URL: https://github.com/gaborcsardi/parsedate
 BugReports: https://github.com/gaborcsardi/parsedate/issues
