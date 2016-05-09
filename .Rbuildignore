@@ -2,6 +2,6 @@
 ^scripts$
 ^.travis.yml$
 ^appveyor.yml$
-README.Rmd
-Makefile
+^README.md$
+^Makefile$
 ^NEWS.md$
