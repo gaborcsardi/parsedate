@@ -11,7 +11,7 @@ Three useful functions to parse and format dates.
     validator.
   \item \code{\link{parse_date}} can parse a date when you don't know
     which format it is in. First it tries all ISO 8601 formats.
-    Then it tries git's versatize date parser. Lastly, it tries
+    Then it tries git's versatile date parser. Lastly, it tries
     \code{as.POSIXct}.
   \item \code{\link{format_iso_8601}} formats a date (and time) in
     a specific ISO 8601 format.
