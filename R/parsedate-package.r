@@ -53,6 +53,7 @@ yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 #'     to make sure that we can parse at least as many dates as
 #'     \code{as.POSIXct}.
 #' }
+#' \code{parse_date} returns quickly in case of empty input elements.
 #'
 #' @param dates A character vector. An error is reported if
 #'   the function cannot coerce this parameter to a character vector.
@@ -79,14 +80,24 @@ yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 #'
 #' # But not for this, because this is ISO 8601
 #' parse_date("2014")
+#'
+#' # Handle vectors and empty input
+#' parse_date(c("2014","2015","","2016"))
 
 parse_date <- function(dates, approx = TRUE) {
-  result <- parse_iso_8601(dates)
-  result[is.na(result)] <- parse_git(dates[is.na(result)],
+  result <- rep(as.POSIXct(NA), length = length(dates))
+
+  result[dates.to.parse(dates, result)] <- parse_iso_8601(dates[dates.to.parse(dates, result)])
+  result[dates.to.parse(dates, result)] <- parse_git(dates[dates.to.parse(dates, result)],
                                      approx = approx)
-  result[is.na(result)] <- parse_rbase(dates[is.na(result)])
+  result[dates.to.parse(dates, result)] <- parse_rbase(dates[dates.to.parse(dates, result)])
   result
 }
+
+dates.to.parse <- function(dates, results) {
+  dates != "" & is.na(results)
+}
+
 
 ## --------------------------------------------------------------------
 #' Parse date from an ISO 8601 format
