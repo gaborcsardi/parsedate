@@ -1,6 +1,7 @@
 
 #include <R.h>
 #include <Rdefines.h>
+#include <R_ext/Rdynload.h>
 
 #include "date.h"
 
@@ -51,4 +52,15 @@ SEXP R_parse_date(SEXP chr, SEXP approx) {
 
   UNPROTECT(2);
   return result;
+}
+
+static const R_CallMethodDef callMethods[]  = {
+  {"R_parse_date", (DL_FUNC) &R_parse_date, 2},
+  {NULL, NULL, 0}
+};
+
+void R_init_parsedate(DllInfo *dll) {
+  R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
+  R_useDynamicSymbols(dll, FALSE);
+  R_forceSymbols(dll, TRUE);
 }

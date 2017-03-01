@@ -16,3 +16,4 @@ Suggests:
     testthat
 URL: https://github.com/gaborcsardi/parsedate
 BugReports: https://github.com/gaborcsardi/parsedate/issues
+RoxygenNote: 6.0.1

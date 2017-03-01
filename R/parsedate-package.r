@@ -16,7 +16,7 @@
 #'
 #' @docType package
 #' @name parsedate-package
-#' @useDynLib parsedate
+#' @useDynLib parsedate, .registration = TRUE, .fixes = "C_"
 #' @importFrom methods reconcilePropertiesAndPrototype
 
 NULL
@@ -294,7 +294,7 @@ parse_rbase <- function(dates) {
 }
 
 parse_git <- function(dates, approx) {
-  .Call("R_parse_date", dates, approx, PACKAGE="parsedate")
+  .Call(C_R_parse_date, dates, approx)
 }
 
 ## --------------------------------------------------------------------
