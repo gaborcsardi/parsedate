@@ -17,7 +17,7 @@ test_that("Bug #10 is fixed", {
 test_that("Empty strings are replaced by NAs", {
 
   dates <- c("", "", "")
-  expected <- c(NA, NA, NA)
+  expected <- as.POSIXct(c(NA, NA, NA))
   actual <- c(parse_date(dates))
 
   expect_equal(expected, actual)
@@ -30,6 +30,6 @@ test_that("Approx parameter is passed on", {
   pd1 <- parse_date(date, approx = FALSE)
   pd2 <- parse_date(date, approx = TRUE)
 
-  expect_false(pd1 == pd2)
-  
+  expect_true(is.na(pd1))
+  expect_false(is.na(pd2))
 })
