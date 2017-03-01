@@ -86,12 +86,18 @@ yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 
 parse_date <- function(dates, approx = TRUE) {
   result <- rep(as.POSIXct(NA), length = length(dates))
+  dates <- trimws(dates)
+  dates <- sapply(dates, replace.unparseable, USE.NAMES = FALSE)
 
   result[dates.to.parse(dates, result)] <- parse_iso_8601(dates[dates.to.parse(dates, result)])
   result[dates.to.parse(dates, result)] <- parse_git(dates[dates.to.parse(dates, result)],
                                      approx = approx)
   result[dates.to.parse(dates, result)] <- parse_rbase(dates[dates.to.parse(dates, result)])
   result
+}
+
+replace.unparseable <- function(date) {
+  gsub(pattern = "[^ A-Za-z0-9:.-]", replacement = "", date)
 }
 
 dates.to.parse <- function(dates, results) {

@@ -24,6 +24,37 @@ test_that("Empty strings are replaced by NAs", {
   
 })
 
+test_that("White-space string is replaced by NAs", {
+
+  date <- " "
+  expected <- NA
+  actual <- c(parse_date(date))
+
+  expect_equal(expected, actual)
+  
+})
+
+test_that("White-spaces are gracefully removed", {
+
+  date <- " 22.2.2222   "
+  expected <- parse_date("22.2.2222")
+  actual <- c(parse_date(date))
+
+  expect_equal(expected, actual)
+  
+})
+
+
+test_that("Non-sensical input is removed", {
+  
+  date <- "?=)(!$§#$%"
+  expected <- as.POSIXct(NA)
+  actual <- parse_date(date)
+  
+  expect_equal(expected, actual)
+  
+})
+
 test_that("Approx parameter is passed on", {
 
   date <- "31.12."
