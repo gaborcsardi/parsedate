@@ -5,7 +5,7 @@
 [![Linux Build Status](https://travis-ci.org/gaborcsardi/parsedate.svg?branch=master)](https://travis-ci.org/gaborcsardi/parsedate)
 [![Windows build status](https://ci.appveyor.com/api/projects/status/github/gaborcsardi/parsedate?svg=true)](https://ci.appveyor.com/project/gaborcsardi/parsedate)
 [![](http://www.r-pkg.org/badges/version/parsedate)](http://www.r-pkg.org/pkg/parsedate)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/parsedate)](http://cran.r-project.org/web/packages/parsedate/index.html)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/parsedate)](https://r-pkg.org/pkg/parsedate)
 [![Coverage Status](https://img.shields.io/codecov/c/github/gaborcsardi/parsedate/master.svg)](https://codecov.io/github/gaborcsardi/parsedate?branch=master)
 
 This R package has three functions for dealing with dates.
