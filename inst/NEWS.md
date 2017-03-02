@@ -1,4 +1,8 @@
 
+# Parsedate 1.1.3
+
+* Update URLs in the README
+
 # Parsedate 1.1.2
 
 * Fix a vectorization bug in the ISO 8601 date parser
