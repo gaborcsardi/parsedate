@@ -97,7 +97,7 @@ parse_date <- function(dates, approx = TRUE) {
 }
 
 replace.unparseable <- function(date) {
-  gsub(pattern = "[^ A-Za-z0-9:.-]", replacement = "", date)
+  gsub(pattern = "[^ A-Za-z0-9:.-/]", replacement = "", date)
 }
 
 dates.to.parse <- function(dates, results) {

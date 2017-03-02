@@ -27,7 +27,7 @@ test_that("Empty strings are replaced by NAs", {
 test_that("White-space string is replaced by NAs", {
 
   date <- " "
-  expected <- NA
+  expected <- as.POSIXct(NA)
   actual <- c(parse_date(date))
 
   expect_equal(expected, actual)
