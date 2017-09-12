@@ -1,3 +1,6 @@
+# Parsedate 1.1.3-9000
+
+* parse_date() used partial argument matching
 
 # Parsedate 1.1.3
 
