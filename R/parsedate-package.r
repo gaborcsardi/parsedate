@@ -85,7 +85,7 @@ yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 #' parse_date(c("2014","2015","","2016"))
 
 parse_date <- function(dates, approx = TRUE) {
-  result <- rep(as.POSIXct(NA), length = length(dates))
+  result <- rep(as.POSIXct(NA), times = length(dates))
   dates <- trimws(dates)
   dates <- sapply(dates, replace.unparseable, USE.NAMES = FALSE)
 
@@ -151,7 +151,7 @@ parse_iso_8601 <- function(dates) {
   matching <- sapply(match, function(x)
     ! identical(x, -1L) & ! identical(x, -1))
   match_list <- regexp_to_df(dates, match)
-  result <- rep(NA_real_, length(dates))
+  result <- rep(NA_real_, times = length(dates))
   result[matching] <- sapply(match_list, parse_iso_single)
 
   result <- unlist(result)
