@@ -85,7 +85,7 @@ yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 #' parse_date(c("2014","2015","","2016"))
 
 parse_date <- function(dates, approx = TRUE) {
-  result <- rep(as.POSIXct(NA), length = length(dates))
+  result <- rep(as.POSIXct(NA), length.out = length(dates))
   dates <- trimws(dates)
   dates <- sapply(dates, replace.unparseable, USE.NAMES = FALSE)
 
