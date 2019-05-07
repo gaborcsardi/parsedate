@@ -1,4 +1,8 @@
 
+# parsedate dev
+
+* Reimplement `parse_iso_8601()` with vectorized code, for speed (#9).
+
 # Parsedate 1.1.3
 
 * Update URLs in the README

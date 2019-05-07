@@ -11,6 +11,8 @@ License: GPL-2
 LazyData: true
 Depends:
     methods
+Imports:
+    rematch2
 Suggests:
     covr,
     testthat

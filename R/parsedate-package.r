@@ -147,31 +147,94 @@ dates.to.parse <- function(dates, results) {
 
 parse_iso_8601 <- function(dates) {
   dates <- as.character(dates)
-  match <- regexpr(iso_regex, dates, perl = TRUE)
-  matching <- sapply(match, function(x)
-    ! identical(x, -1L) & ! identical(x, -1))
-  match_list <- regexp_to_df(dates, match)
-  result <- rep(NA_real_, length(dates))
-  result[matching] <- sapply(match_list, parse_iso_single)
-
-  result <- unlist(result)
+  match <- rematch2::re_match(dates, iso_regex)
+  matching <- !is.na(match$.match)
+  result <- parse_iso_parts(match)
   class(result) <- c("POSIXct", "POSIXt")
   with_tz(result, "UTC")
 }
 
-regexp_to_df <- function(text, match) {
-  positive <- match != -1
-  g_text <- text[positive]
-  g_start <- attr(match, "capture.start")[positive, , drop = FALSE]
-  g_length <- attr(match, "capture.length")[positive, , drop = FALSE]
+parse_iso_parts <- function(mm) {
 
-  lapply(seq_len(sum(positive)), function(i) {
-    data.frame(start = g_start[i,],
-               length = g_length[i,],
-               match = substring(g_text[i], g_start[i,],
-                 g_start[i,] + g_length[i,] - 1),
-               stringsAsFactors = FALSE)
-  })
+  num <- nrow(mm)
+
+  ## -----------------------------------------------------------------
+  ## Date first
+
+  date <- .POSIXct(rep(NA_real_, num))
+
+  ## Years-days
+  fyd <- is.na(date) & mm$yearday != ""
+  date[fyd] <- yj(paste(mm$year[fyd], mm$yearday[fyd]))
+
+  ## Years-weeks-days
+  fywd <- is.na(date) & mm$week != "" & mm$weekday != ""
+  date[fywd] <- iso_week(mm$year[fywd], mm$week[fywd], mm$weekday[fywd])
+
+  ## Years-weeks
+  fyw <- is.na(date) & mm$week != ""
+  date[fyw] <- iso_week(mm$year[fyw], mm$week[fyw], "1")
+
+  ## Years-months-days
+  fymd <- is.na(date) & mm$month != "" & mm$day != ""
+  date[fymd] <- ymd(paste(mm$year[fymd], mm$month[fymd], mm$day[fymd]))
+
+  ## Years-months
+  fym <- is.na(date) & mm$month != ""
+  date[fym] <- ymd(paste(mm$year[fym], mm$month[fym], "01"))
+
+  ## Years
+  fy <- is.na(date)
+  date[fy] <- ymd(paste(mm$year, "01", "01"))
+
+  ## -----------------------------------------------------------------
+  ## Now the time
+
+  th <- mm$hour != ""
+  date[th] <- date[th] + hours(mm$hour[th])
+
+  tm <- mm$min != ""
+  date[tm] <- date[tm] + minutes(mm$min[tm])
+
+  ts <- mm$sec != ""
+  date[ts] <- date[ts] + seconds(mm$sec[ts])
+
+  ## -----------------------------------------------------------------
+  ## Fractional time
+
+  frac <- as.numeric(sub(",", ".", mm$frac))
+
+  tfs <- !is.na(frac) & mm$sec != ""
+  date[tfs] <- date[tfs] + milliseconds(round(frac[tfs] * 1000))
+
+  tfm <- !is.na(frac) & mm$sec == "" & mm$min != ""
+  sec <- trunc(frac[tfm] * 60)
+  mil <- round((frac[tfm] * 60 - sec) * 1000)
+  date[tfm] <- date[tfm] + seconds(sec) + milliseconds(mil)
+
+  tfh <- !is.na(frac) & mm$sec == "" & mm$min == ""
+  min <- trunc(frac[tfh] * 60)
+  sec <- trunc((frac[tfh] * 60 - min) * 60)
+  mil <- round((((frac[tfh] * 60) - min) * 60 - sec) * 1000)
+  date[tfh] <- date[tfh] + minutes(min) + seconds(sec) + milliseconds(mil)
+
+  ## -----------------------------------------------------------------
+  ## Time zone
+
+  ftzpm <- mm$tzpm != ""
+  m <- ifelse(mm$tzpm[ftzpm] == "+", -1, 1)
+  ftzpmh <- ftzpm & mm$tzhour != ""
+  date[ftzpmh] <- date[ftzpmh] + m * hours(mm$tzhour[ftzpmh])
+  ftzpmm <- ftzpm & mm$tzmin != ""
+  date[ftzpmm] <- date[ftzpmm] + m * minutes(mm$tzmin[ftzpmm])
+
+  ftzz <- mm$tz == "Z"
+  date[ftzz] <- as.POSIXct(date[ftzz], "UTC")
+
+  ftz <- mm$tz != "Z" & mm$tz != ""
+  date[ftz] <- as.POSIXct(date[ftz], mm$tz[ftz])
+
+  as.POSIXct(date, "UTC")
 }
 
 iso_regex <- paste0(
@@ -190,98 +253,6 @@ iso_regex <- paste0(
     "(?<tz>[zZ]|(?<tzpm>[\\+-])",
      "(?<tzhour>[01]\\d|2[0-3]):?(?<tzmin>[0-5]\\d)?)?)?)?$"
   )
-
-parse_iso_single <- function(match) {
-  parts <- structure(match[,3], names = rownames(match))
-  ## Date first
-
-  ## Years-days?
-  date <- if (parts["yearday"] != "") {
-    yj(paste(
-      parts["year"],
-      parts["yearday"]
-      )
-    )
-
-  ## Years-weeks-days?
-  } else if (parts["week"] != "" && parts["weekday"] != "") {
-    iso_week(parts["year"], parts["week"], parts["weekday"])
-
-  ## Years-weeks?
-  } else if (parts["week"] != "") {
-    iso_week(parts["year"], parts["week"], "1")
-
-  ## Years-months-days
-  } else if (parts["month"] != "" && parts["day"] != "") {
-    ymd(paste(
-      parts["year"],
-      parts["month"],
-      parts["day"]
-      )
-    )
-
-  ## Years-months
-  } else if (parts["month"] != "") {
-    ymd(paste(
-      parts["year"],
-      parts["month"],
-      "01"
-      )
-    )
-
-  ## Years
-  } else {
-    ymd(paste(
-      parts["year"],
-      "01",
-      "01"
-      )
-    )
-  }
-
-  ## Add the rest
-  if (parts["hour"] != "") { date <- date + hours(parts["hour"]) }
-  if (parts["min"] != "") { date <- date + minutes(parts["min"]) }
-  if (parts["sec"] != "") { date <- date + seconds(parts["sec"]) }
-
-  ## Fractional time
-  if (parts["frac"] != "") {
-    frac <- as.numeric(sub(",", ".", parts["frac"]))
-    if (parts["sec"] != "") {
-      ## fractions of a second
-      date <- date + milliseconds(round(frac * 1000))
-    } else if (parts["min"] != "") {
-      ## fractions of a minute
-      sec <- trunc(frac * 60)
-      milli <- round((frac * 60 - sec) * 1000)
-      date <- date + seconds(sec) + milliseconds(milli)
-    } else {
-      ## fractions of an hour
-      min <- trunc(frac * 60)
-      sec <- trunc((frac * 60 - min) * 60)
-      milli <- round((((frac * 60) - min) * 60 - sec) * 1000)
-      date <- date + minutes(min) + seconds(sec) + milliseconds(milli)
-    }
-  }
-
-  ## Set time zone
-  if (parts["tzpm"] != "") {
-    m <- if (parts["tzpm"] == "+") -1 else 1
-    if (parts["tzhour"] != "") { date <- date + m * hours(parts["tzhour"]) }
-    if (parts["tzmin"] != "") { date <- date + m * minutes(parts["tzmin"]) }
-    date <- as.POSIXct(date, "UTC")
-  } else if (parts["tz"] != "") {
-    if (parts["tz"] == "Z") {
-      date <- as.POSIXct(date, "UTC")
-    } else {
-      date <- as.POSIXct(date, parts["tz"])
-    }
-  } else {
-    date <- as.POSIXct(date, "UTC")
-  }
-
-  date
-}
 
 iso_week <- function(year, week, weekday) {
 
