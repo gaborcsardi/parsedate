@@ -5,6 +5,8 @@
 
 * Fix `parse_date()` and `parse_iso_8601()` for zero-length input (#20).
 
+* `parse_date()` parses strings with `+` characters correctly now (#23).
+
 # Parsedate 1.1.3
 
 * Update URLs in the README
