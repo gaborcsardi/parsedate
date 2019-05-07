@@ -88,20 +88,20 @@ parse_date <- function(dates, approx = TRUE) {
   result <- rep(.POSIXct(NA_real_, tz = ""), length.out = length(dates))
   if (!length(dates)) return(result)
   dates <- trimws(dates)
-  dates <- vapply(dates, replace.unparseable, "", USE.NAMES = FALSE)
+  dates <- vapply(dates, replace_unparseable, "", USE.NAMES = FALSE)
 
-  result[dates.to.parse(dates, result)] <- parse_iso_8601(dates[dates.to.parse(dates, result)])
-  result[dates.to.parse(dates, result)] <- parse_git(dates[dates.to.parse(dates, result)],
+  result[todo(dates, result)] <- parse_iso_8601(dates[todo(dates, result)])
+  result[todo(dates, result)] <- parse_git(dates[todo(dates, result)],
                                      approx = approx)
-  result[dates.to.parse(dates, result)] <- parse_rbase(dates[dates.to.parse(dates, result)])
+  result[todo(dates, result)] <- parse_rbase(dates[todo(dates, result)])
   result
 }
 
-replace.unparseable <- function(date) {
+replace_unparseable <- function(date) {
   gsub(pattern = "[^ A-Za-z0-9:./+-]", replacement = "", date)
 }
 
-dates.to.parse <- function(dates, results) {
+todo <- function(dates, results) {
   dates != "" & is.na(results)
 }
 
