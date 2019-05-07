@@ -85,9 +85,10 @@ yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 #' parse_date(c("2014","2015","","2016"))
 
 parse_date <- function(dates, approx = TRUE) {
-  result <- rep(as.POSIXct(NA), length.out = length(dates))
+  result <- rep(.POSIXct(NA_real_, tz = ""), length.out = length(dates))
+  if (!length(dates)) return(result)
   dates <- trimws(dates)
-  dates <- sapply(dates, replace.unparseable, USE.NAMES = FALSE)
+  dates <- vapply(dates, replace.unparseable, "", USE.NAMES = FALSE)
 
   result[dates.to.parse(dates, result)] <- parse_iso_8601(dates[dates.to.parse(dates, result)])
   result[dates.to.parse(dates, result)] <- parse_git(dates[dates.to.parse(dates, result)],
@@ -161,7 +162,7 @@ parse_iso_parts <- function(mm) {
   ## -----------------------------------------------------------------
   ## Date first
 
-  date <- .POSIXct(rep(NA_real_, num))
+  date <- .POSIXct(rep(NA_real_, num), tz = "")
 
   ## Years-days
   fyd <- is.na(date) & mm$yearday != ""

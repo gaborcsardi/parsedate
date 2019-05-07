@@ -64,3 +64,13 @@ test_that("Approx parameter is passed on", {
   expect_true(is.na(pd1))
   expect_false(is.na(pd2))
 })
+
+test_that("zero length input (issue #20)", {
+  expect_identical(
+    parse_date(character(0)),
+    structure(numeric(0), class = c("POSIXct", "POSIXt"), tzone = ""))
+
+  expect_identical(
+    parse_iso_8601(character(0)),
+    structure(numeric(0), class = c("POSIXct", "POSIXt"), tzone = "UTC"))
+})
