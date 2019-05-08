@@ -298,12 +298,12 @@ parse_rbase <- function(dates, default_tz = "UTC") {
   result <- lapply(dates, function(x) { try(as.POSIXct(x), silent = TRUE) })
   bad <- vapply(result, inherits, "try-error", FUN.VALUE = TRUE)
   result[bad] <- NA
-  unlist(result)
+  .POSIXct(unlist(result) %||% numeric(), "UTC")
 }
 
 parse_git <- function(dates, approx, default_tz = "UTC") {
   ## TODO: tz
-  .Call(C_R_parse_date, dates, approx)
+  .POSIXct(.Call(C_R_parse_date, dates, approx) %||% numeric(), "UTC")
 }
 
 ## --------------------------------------------------------------------
@@ -327,3 +327,5 @@ parse_git <- function(dates, approx, default_tz = "UTC") {
 format_iso_8601 <- function(date) {
   format(as.POSIXlt(date, tz = "UTC"), "%Y-%m-%dT%H:%M:%S+00:00")
 }
+
+`%||%` <- function(l, r) if (is.null(l)) r else l
