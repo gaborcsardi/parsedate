@@ -17,7 +17,7 @@ test_that("Bug #10 is fixed", {
 test_that("Empty strings are replaced by NAs", {
 
   dates <- c("", "", "")
-  expected <- as.POSIXct(c(NA, NA, NA))
+  expected <- .POSIXct(c(NA_real_, NA_real_, NA_real_), "UTC")
   actual <- c(parse_date(dates))
 
   expect_equal(expected, actual)
@@ -27,7 +27,7 @@ test_that("Empty strings are replaced by NAs", {
 test_that("White-space string is replaced by NAs", {
 
   date <- " "
-  expected <- as.POSIXct(NA)
+  expected <- .POSIXct(NA_real_, "UTC")
   actual <- c(parse_date(date))
 
   expect_equal(expected, actual)
@@ -48,7 +48,7 @@ test_that("White-spaces are gracefully removed", {
 test_that("Non-sensical input is removed", {
   
   date <- "?=)(!$§#$%"
-  expected <- as.POSIXct(NA)
+  expected <- .POSIXct(NA_real_, "UTC")
   actual <- parse_date(date)
   
   expect_equal(expected, actual)
@@ -68,7 +68,7 @@ test_that("Approx parameter is passed on", {
 test_that("zero length input (issue #20)", {
   expect_identical(
     parse_date(character(0)),
-    structure(numeric(0), class = c("POSIXct", "POSIXt"), tzone = ""))
+    structure(numeric(0), class = c("POSIXct", "POSIXt"), tzone = "UTC"))
 
   expect_identical(
     parse_iso_8601(character(0)),

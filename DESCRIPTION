@@ -15,8 +15,9 @@ Imports:
     rematch2
 Suggests:
     covr,
-    testthat
+    testthat,
+    withr
 URL: https://github.com/gaborcsardi/parsedate
 BugReports: https://github.com/gaborcsardi/parsedate/issues
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Encoding: UTF-8

@@ -60,6 +60,9 @@ yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 #' @param approx Logical flag, whether the git parse should try
 #'   hard(er). If this is set to \code{TRUE}, then the current time is used
 #'   to fill in the missing parts of the date and time.
+#' @param default_tz Time zone to assume for dates that don't specify a
+#'   time zone explicitly. Defaults to UTC, and an empty string means the
+#'   local time zone.
 #' @return A \code{POSIXct} vector. \code{NA} is returned for
 #'   the dates that \code{parse_date} could not parse.
 #'
@@ -83,17 +86,38 @@ yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 #'
 #' # Handle vectors and empty input
 #' parse_date(c("2014","2015","","2016"))
+#'
+#' # Convert result to local time
+#' tz <- format(Sys.time(), "%Z")
+#' as.POSIXct(parse_date("2014-12-13T11:12:13"), tz)
+#'
+#' # Local time zone
+#' parse_date("2014-12-13T11:12:13", default_tz = "CET")
+#' parse_date("2014-12-13T11:12:13", default_tz = "UTC")
 
-parse_date <- function(dates, approx = TRUE) {
-  result <- rep(.POSIXct(NA_real_, tz = ""), length.out = length(dates))
+parse_date <- function(dates, approx = TRUE, default_tz = "UTC") {
+  if (default_tz == "") default_tz <- format(Sys.time(), "%Z")
+
+  result <- rep(
+    .POSIXct(NA_real_, tz = "UTC"),
+    length.out = length(dates))
+
   if (!length(dates)) return(result)
+
   dates <- trimws(dates)
   dates <- vapply(dates, replace_unparseable, "", USE.NAMES = FALSE)
 
-  result[todo(dates, result)] <- parse_iso_8601(dates[todo(dates, result)])
-  result[todo(dates, result)] <- parse_git(dates[todo(dates, result)],
-                                     approx = approx)
-  result[todo(dates, result)] <- parse_rbase(dates[todo(dates, result)])
+  ## Try ISO 8601 first
+  result[] <- parse_iso_8601(dates, default_tz)
+
+  ## Try git parser next
+  miss <- is.na(result)
+  result[miss] <- parse_git(dates[miss], approx = approx, default_tz)
+
+  ## Try base R last
+  miss <- is.na(result)
+  result[miss] <- parse_rbase(dates[miss], default_tz)
+
   result
 }
 
@@ -114,6 +138,9 @@ todo <- function(dates, results) {
 #'
 #' @param dates A character vector. An error is reported if
 #'   the function cannot coerce this parameter to a character vector.
+#' @param default_tz Time zone to assume for dates that don't specify a
+#'   time zone explicitly. Defaults to UTC, and an empty string means the
+#'   local time zone.
 #' @return A \code{POSIXct} vector. \code{NA} is returned for
 #'   the dates that \code{parse_date} could not parse.
 #'
@@ -146,16 +173,18 @@ todo <- function(dates, results) {
 #' parse_iso_8601("2013-039")
 #' parse_iso_8601("2013-039 09:30:26Z")
 
-parse_iso_8601 <- function(dates) {
+parse_iso_8601 <- function(dates, default_tz = "UTC") {
+  if (default_tz == "") default_tz <- format(Sys.time(), "%Z")
   dates <- as.character(dates)
   match <- rematch2::re_match(dates, iso_regex)
   matching <- !is.na(match$.match)
-  result <- parse_iso_parts(match)
+  result <- rep(.POSIXct(NA_real_, tz = ""), length.out = length(dates))
+  result[matching] <- parse_iso_parts(match[matching, ], default_tz)
   class(result) <- c("POSIXct", "POSIXt")
   with_tz(result, "UTC")
 }
 
-parse_iso_parts <- function(mm) {
+parse_iso_parts <- function(mm, tz) {
 
   num <- nrow(mm)
 
@@ -264,14 +293,16 @@ iso_week <- function(year, week, weekday) {
     days(as.numeric(weekday) - 4L)
 }
 
-parse_rbase <- function(dates) {
+parse_rbase <- function(dates, default_tz = "UTC") {
+  ## TODO: tz
   result <- lapply(dates, function(x) { try(as.POSIXct(x), silent = TRUE) })
   bad <- vapply(result, inherits, "try-error", FUN.VALUE = TRUE)
   result[bad] <- NA
   unlist(result)
 }
 
-parse_git <- function(dates, approx) {
+parse_git <- function(dates, approx, default_tz = "UTC") {
+  ## TODO: tz
   .Call(C_R_parse_date, dates, approx)
 }
 
