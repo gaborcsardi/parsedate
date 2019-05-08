@@ -119,3 +119,14 @@ test_that("empty default time zone is the local time zone (US/Pacific)", {
   d <- parse_rbase("2010-07-01", default_tz = "")
   expect_equal(d, .POSIXct(as.POSIXct("2010-07-01", "US/Pacific"), "UTC"))
 })
+
+test_that("mixing explicit and default time zones", {
+  local_timezone("CET")
+
+  exp <- .POSIXct(as.POSIXct("2010-07-01", "%Y-%m-%d", tz = "CET"), "UTC")
+  d <- parse_date(
+    c("2010-07-01", "2010-06-30T22:00:00Z", "2010-07-01TCET",
+      "2010-06-30T16:00:00-06:00"),
+    default_tz = "")
+  expect_equal(d, rep(exp, 4))
+})
