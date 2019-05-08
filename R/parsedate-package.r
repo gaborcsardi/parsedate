@@ -96,7 +96,7 @@ yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 #' parse_date("2014-12-13T11:12:13", default_tz = "UTC")
 
 parse_date <- function(dates, approx = TRUE, default_tz = "UTC") {
-  if (default_tz == "") default_tz <- format(Sys.time(), "%Z")
+  if (default_tz == "") default_tz <- Sys.timezone()
 
   result <- rep(
     .POSIXct(NA_real_, tz = "UTC"),
@@ -174,7 +174,7 @@ todo <- function(dates, results) {
 #' parse_iso_8601("2013-039 09:30:26Z")
 
 parse_iso_8601 <- function(dates, default_tz = "UTC") {
-  if (default_tz == "") default_tz <- format(Sys.time(), "%Z")
+  if (default_tz == "") default_tz <- Sys.timezone()
   dates <- as.character(dates)
   match <- rematch2::re_match(dates, iso_regex)
   matching <- !is.na(match$.match)
@@ -184,7 +184,7 @@ parse_iso_8601 <- function(dates, default_tz = "UTC") {
   with_tz(result, "UTC")
 }
 
-parse_iso_parts <- function(mm, tz) {
+parse_iso_parts <- function(mm, default_tz) {
 
   num <- nrow(mm)
 
@@ -264,6 +264,15 @@ parse_iso_parts <- function(mm, tz) {
   ftz <- mm$tz != "Z" & mm$tz != ""
   date[ftz] <- as.POSIXct(date[ftz], mm$tz[ftz])
 
+  if (default_tz != "UTC") {
+    ftna <- mm$tzpm == "" & mm$tz == ""
+    if (any(ftna)) {
+      dd <- as.POSIXct(format_iso_8601(date[ftna]),
+                       "%Y-%m-%dT%H:%M:%S+00:00", tz = default_tz)
+      date[ftna] <- dd
+    }
+  }
+
   as.POSIXct(date, "UTC")
 }
 
@@ -294,16 +303,21 @@ iso_week <- function(year, week, weekday) {
 }
 
 parse_rbase <- function(dates, default_tz = "UTC") {
-  ## TODO: tz
-  result <- lapply(dates, function(x) { try(as.POSIXct(x), silent = TRUE) })
+  result <- lapply(dates, function(x) {
+    try(as.POSIXct(x, tz = default_tz), silent = TRUE)
+  })
   bad <- vapply(result, inherits, "try-error", FUN.VALUE = TRUE)
   result[bad] <- NA
   .POSIXct(unlist(result) %||% numeric(), "UTC")
 }
 
 parse_git <- function(dates, approx, default_tz = "UTC") {
-  ## TODO: tz
-  .POSIXct(.Call(C_R_parse_date, dates, approx) %||% numeric(), "UTC")
+  ret <- .POSIXct(.Call(C_R_parse_date, dates, approx) %||% numeric(), "UTC")
+  if (default_tz != "UTC") {
+    ret <- as.POSIXct(format_iso_8601(ret), "%Y-%m-%dT%H:%M:%S+00:00",
+                      tz = default_tz)
+  }
+  .POSIXct(ret, "UTC")
 }
 
 ## --------------------------------------------------------------------
