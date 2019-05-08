@@ -17,7 +17,6 @@
 #' @docType package
 #' @name parsedate-package
 #' @useDynLib parsedate, .registration = TRUE, .fixes = "C_"
-#' @importFrom methods reconcilePropertiesAndPrototype
 
 NULL
 
