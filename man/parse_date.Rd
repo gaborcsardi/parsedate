@@ -15,7 +15,8 @@ hard(er). If this is set to \code{TRUE}, then the current time is used
 to fill in the missing parts of the date and time.}
 
 \item{default_tz}{Time zone to assume for dates that don't specify a
-time zone explicitly.}
+time zone explicitly. Defaults to UTC, and an empty string means the
+local time zone.}
 }
 \value{
 A \code{POSIXct} vector. \code{NA} is returned for

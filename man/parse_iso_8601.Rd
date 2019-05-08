@@ -4,11 +4,15 @@
 \alias{parse_iso_8601}
 \title{Parse date from an ISO 8601 format}
 \usage{
-parse_iso_8601(dates)
+parse_iso_8601(dates, default_tz = "UTC")
 }
 \arguments{
 \item{dates}{A character vector. An error is reported if
 the function cannot coerce this parameter to a character vector.}
+
+\item{default_tz}{Time zone to assume for dates that don't specify a
+time zone explicitly. Defaults to UTC, and an empty string means the
+local time zone.}
 }
 \value{
 A \code{POSIXct} vector. \code{NA} is returned for
