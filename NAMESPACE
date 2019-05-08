@@ -3,5 +3,4 @@
 export(format_iso_8601)
 export(parse_date)
 export(parse_iso_8601)
-importFrom(methods,reconcilePropertiesAndPrototype)
 useDynLib(parsedate, .registration = TRUE, .fixes = "C_")

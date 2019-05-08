@@ -9,14 +9,13 @@ Description: Parse dates automatically, without the need of
     It can also recognize and parse all ISO 8601 formats.
 License: GPL-2
 LazyData: true
-Depends:
-    methods
 Imports:
     rematch2
 Suggests:
     covr,
-    testthat
+    testthat,
+    withr
 URL: https://github.com/gaborcsardi/parsedate
 BugReports: https://github.com/gaborcsardi/parsedate/issues
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Encoding: UTF-8

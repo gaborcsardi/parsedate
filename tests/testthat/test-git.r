@@ -36,8 +36,7 @@ test_that("Issue #3 is resolved", {
 test_that("Issue #4 is resolved", {
 
   d1 <- parse_date("000102")
-  expect_equal(d1, as.POSIXct(NA))
-
+  expect_equal(d1, .POSIXct(NA_real_, "UTC"))
 })
 
 test_that("Issue #5 is resolved", {

@@ -1,6 +1,9 @@
 
 # parsedate dev
 
+* `parse_date()` and `parse_iso_8601()` now dupport a default time zone,
+  that will be used for dates that do not explicitly specify one.
+
 * Reimplement `parse_iso_8601()` with vectorized code, for speed (#9).
 
 * Fix `parse_date()` and `parse_iso_8601()` for zero-length input (#20).
