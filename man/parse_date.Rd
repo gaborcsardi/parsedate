@@ -38,6 +38,10 @@ algorithm is the following:
 }
 \code{parse_date} returns quickly in case of empty input elements.
 }
+\details{
+All dates are returned in the UTC time zone. If you preder a different
+time zone, simply use `.POSIXct()` on the result, see examples below.
+}
 \examples{
 # Some easy examples
 parse_date("2014-12-12")
@@ -65,4 +69,8 @@ as.POSIXct(parse_date("2014-12-13T11:12:13"), tz)
 # Local time zone
 parse_date("2014-12-13T11:12:13", default_tz = "CET")
 parse_date("2014-12-13T11:12:13", default_tz = "UTC")
+
+# Convert results to different timezone
+parse_date("2015-12-13T11:12:13")
+.POSIXct(parse_date("2015-12-13T11:12:13"), tz = "CET")
 }

@@ -54,6 +54,9 @@ yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 #' }
 #' \code{parse_date} returns quickly in case of empty input elements.
 #'
+#' All dates are returned in the UTC time zone. If you preder a different
+#' time zone, simply use `.POSIXct()` on the result, see examples below.
+#'
 #' @param dates A character vector. An error is reported if
 #'   the function cannot coerce this parameter to a character vector.
 #' @param approx Logical flag, whether the git parse should try
@@ -93,6 +96,10 @@ yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 #' # Local time zone
 #' parse_date("2014-12-13T11:12:13", default_tz = "CET")
 #' parse_date("2014-12-13T11:12:13", default_tz = "UTC")
+#'
+#' # Convert results to different timezone
+#' parse_date("2015-12-13T11:12:13")
+#' .POSIXct(parse_date("2015-12-13T11:12:13"), tz = "CET")
 
 parse_date <- function(dates, approx = TRUE, default_tz = "UTC") {
   if (default_tz == "") default_tz <- Sys.timezone()
