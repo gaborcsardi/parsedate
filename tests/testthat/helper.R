@@ -16,3 +16,9 @@ local_timezone <- function(tzone, .local_envir = parent.frame()) {
   assign(".sys.timezone", NA, envir = baseenv())
   withr::local_envvar(c(TZ = tzone), .local_envir = .local_envir)
 }
+
+cdate <- function(...) {
+  ret <- c(...)
+  attr(ret, "tzone") <- "UTC"
+  ret
+}
