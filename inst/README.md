@@ -20,6 +20,36 @@ This R package has three functions for dealing with dates.
  * `format_iso_8601` formats a date (and time) in
    specific ISO 8601 format.
 
+## Limitations
+
+The git parser does not work for dates before 1970 and after 2100. For
+these dates the current year is used instead:
+
+
+```r
+parse_date("april 15 1971")
+```
+
+```
+## Error in parse_date("april 15 1971"): could not find function "parse_date"
+```
+
+```r
+parse_date("april 15 1969")
+```
+
+```
+## Error in parse_date("april 15 1969"): could not find function "parse_date"
+```
+
+```r
+parse_date("april 15 2110")
+```
+
+```
+## Error in parse_date("april 15 2110"): could not find function "parse_date"
+```
+
 ## Parsing ISO 8601 dates
 
 `parse_iso_8601` recognizes all valid ISO 8601 formats, and
@@ -30,13 +60,6 @@ gives an `NA` for invalid dates. Here are some examples
 
 ```r
 library(parsedate)
-```
-
-```
-## Loading required package: methods
-```
-
-```r
 parse_iso_8601("2013-02-08 09")
 ```
 
@@ -198,7 +221,7 @@ parse_date("2014-12-12")
 ```
 
 ```
-## [1] "2014-12-12 GMT"
+## [1] "2014-12-12 UTC"
 ```
 
 ```r
@@ -206,7 +229,7 @@ parse_date("04/15/99")
 ```
 
 ```
-## [1] "1999-04-15 01:00:00 BST"
+## [1] "1999-04-15 UTC"
 ```
 
 ```r
@@ -214,7 +237,7 @@ parse_date("15/04/99")
 ```
 
 ```
-## [1] "1999-04-15 01:00:00 BST"
+## [1] "1999-04-15 UTC"
 ```
 
 ### Ambiguous formats
@@ -227,7 +250,7 @@ parse_date("12/11/99")
 ```
 
 ```
-## [1] "1999-12-11 GMT"
+## [1] "1999-12-11 UTC"
 ```
 
 ```r
@@ -235,7 +258,7 @@ parse_date("11/12/99")
 ```
 
 ```
-## [1] "1999-11-12 GMT"
+## [1] "1999-11-12 UTC"
 ```
 
 ### Fill in the current date and time for missing fields
@@ -246,7 +269,7 @@ parse_date("03/20")
 ```
 
 ```
-## [1] "2017-03-20 GMT"
+## [1] "2019-03-20 UTC"
 ```
 
 ```r
@@ -254,7 +277,7 @@ parse_date("12")
 ```
 
 ```
-## [1] "2017-03-12 GMT"
+## [1] "2019-05-12 UTC"
 ```
 
 But not for this, because this is ISO 8601.
@@ -265,7 +288,7 @@ parse_date("2014")
 ```
 
 ```
-## [1] "2014-01-01 GMT"
+## [1] "2014-01-01 UTC"
 ```
 
 ## Formatting dates as ISO 8601

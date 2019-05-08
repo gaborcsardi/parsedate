@@ -27,6 +27,17 @@ This R package has three functions for dealing with dates.
  * `format_iso_8601` formats a date (and time) in
    specific ISO 8601 format.
 
+## Limitations
+
+The git parser does not work for dates before 1970 and after 2100. For
+these dates the current year is used instead:
+
+```{r}
+parse_date("april 15 1971")
+parse_date("april 15 1969")
+parse_date("april 15 2110")
+```
+
 ## Parsing ISO 8601 dates
 
 `parse_iso_8601` recognizes all valid ISO 8601 formats, and
