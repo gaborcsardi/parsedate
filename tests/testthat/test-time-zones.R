@@ -36,7 +36,7 @@ test_that("output time zone is always UTC", {
 })
 
 test_that("input time zone is respected (local CET)", {
-  local_timezone("CET")
+  withr::local_timezone("CET")
 
   d <- parse_iso_8601("2010-07-01", default_tz = "CET")
   expect_equal(d, .POSIXct(as.POSIXct("2010-07-01", "CET"), "UTC"))
@@ -61,7 +61,7 @@ test_that("input time zone is respected (local CET)", {
 })
 
 test_that("input time zone is respected (local US/Pacific)", {
-  local_timezone("US/Pacific")
+  withr::local_timezone("US/Pacific")
 
   d <- parse_iso_8601("2010-07-01", default_tz = "CET")
   expect_equal(d, .POSIXct(as.POSIXct("2010-07-01", "CET"), "UTC"))
@@ -86,7 +86,7 @@ test_that("input time zone is respected (local US/Pacific)", {
 })
 
 test_that("empty default time zone is the local time zone (CET)", {
-  local_timezone("CET")
+  withr::local_timezone("CET")
 
   d <- parse_date("2010-07-01", default_tz = "")
   expect_equal(d, .POSIXct(as.POSIXct("2010-07-01", "CET"), "UTC"))
@@ -105,7 +105,7 @@ test_that("empty default time zone is the local time zone (CET)", {
 })
 
 test_that("empty default time zone is the local time zone (US/Pacific)", {
-  local_timezone("US/Pacific")
+  withr::local_timezone("US/Pacific")
 
   d <- parse_date("2010-07-01", default_tz = "")
   expect_equal(d, .POSIXct(as.POSIXct("2010-07-01", "US/Pacific"), "UTC"))
@@ -121,7 +121,7 @@ test_that("empty default time zone is the local time zone (US/Pacific)", {
 })
 
 test_that("mixing explicit and default time zones", {
-  local_timezone("CET")
+  withr::local_timezone("CET")
 
   exp <- .POSIXct(as.POSIXct("2010-07-01", "%Y-%m-%d", tz = "CET"), "UTC")
   d <- parse_date(
