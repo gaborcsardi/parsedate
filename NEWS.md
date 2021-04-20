@@ -1,5 +1,7 @@
 
-# parsedate dev
+# parsedate 1.2.1
+
+No changes.
 
 # parsedate 1.2.0
 
