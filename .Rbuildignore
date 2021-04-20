@@ -4,3 +4,4 @@
 ^appveyor.yml$
 ^revdep$
 ^\.github$
+^README.Rmd$
