@@ -2,8 +2,5 @@
 ^scripts$
 ^.travis.yml$
 ^appveyor.yml$
-^README.md$
-^Makefile$
-^NEWS.md$
 ^revdep$
 ^\.github$

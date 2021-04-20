@@ -1,11 +1,6 @@
-```{r, setup, echo = FALSE, message = FALSE}
-knitr::opts_chunk$set(
-  comment = "##",
-  error = TRUE,
-  tidy = FALSE,
-  fig.width = 8,
-  fig.height = 8)
-```
+---
+output: github_document
+---
 
 # parsedate — Parse dates from ISO 8601, and guess the format
 
@@ -34,6 +29,7 @@ The git parser does not work for dates before 1970 and after 2100. For
 these dates the current year is used instead:
 
 ```{r}
+library(parsedate)
 parse_date("april 15 1971")
 parse_date("april 15 1969")
 parse_date("april 15 2110")
