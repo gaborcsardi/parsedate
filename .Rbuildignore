@@ -6,3 +6,4 @@
 ^Makefile$
 ^NEWS.md$
 ^revdep$
+^\.github$
