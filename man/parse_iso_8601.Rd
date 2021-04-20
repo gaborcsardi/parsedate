@@ -19,7 +19,7 @@ A \code{POSIXct} vector. \code{NA} is returned for
   the dates that \code{parse_date} could not parse.
 }
 \description{
-See \url{http://en.wikipedia.org/wiki/ISO_8601} and links therein
+See \url{https://en.wikipedia.org/wiki/ISO_8601} and links therein
 for the complete standard.
 }
 \examples{

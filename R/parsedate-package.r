@@ -139,7 +139,7 @@ todo <- function(dates, results) {
 ## --------------------------------------------------------------------
 #' Parse date from an ISO 8601 format
 #'
-#' See \url{http://en.wikipedia.org/wiki/ISO_8601} and links therein
+#' See \url{https://en.wikipedia.org/wiki/ISO_8601} and links therein
 #' for the complete standard.
 #'
 #' @param dates A character vector. An error is reported if

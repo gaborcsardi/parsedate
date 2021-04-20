@@ -5,9 +5,9 @@
 
 [![R build
 status](https://github.com/gaborcsardi/parsedate/workflows/R-CMD-check/badge.svg)](https://github.com/gaborcsardi/parsedate/actions)
-[![](http://www.r-pkg.org/badges/version/parsedate)](http://www.r-pkg.org/pkg/parsedate)
+[![](https://www.r-pkg.org/badges/version/parsedate)](https://www.r-pkg.org/pkg/parsedate)
 [![CRAN RStudio mirror
-downloads](http://cranlogs.r-pkg.org/badges/parsedate)](https://r-pkg.org/pkg/parsedate)
+downloads](https://cranlogs.r-pkg.org/badges/parsedate)](https://r-pkg.org/pkg/parsedate)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/gaborcsardi/parsedate/master.svg)](https://codecov.io/github/gaborcsardi/parsedate?branch=master)
 <!-- badges: end -->
