@@ -182,7 +182,7 @@ todo <- function(dates, results) {
 parse_iso_8601 <- function(dates, default_tz = "UTC") {
   if (default_tz == "") default_tz <- Sys.timezone()
   dates <- as.character(dates)
-  match <- rematch2::re_match(dates, iso_regex)
+  match <- re_match(dates, iso_regex)
   matching <- !is.na(match$.match)
   result <- rep(.POSIXct(NA_real_, tz = ""), length.out = length(dates))
   result[matching] <- parse_iso_parts(match[matching, ], default_tz)
