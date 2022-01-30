@@ -5,3 +5,4 @@
 ^revdep$
 ^\.github$
 ^README.Rmd$
+^codecov\.yml$
