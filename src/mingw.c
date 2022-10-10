@@ -21,7 +21,7 @@ struct tm *localtime_r(const time_t *timep, struct tm *result)
 
 #define UNUSED(x) (void)(x)
 
-void R_parsedate_shut_up_about_empty_translation_unit() {
+void R_parsedate_shut_up_about_empty_translation_unit(void) {
   const char *xx = "Here! Better?";
   UNUSED(xx);
 }
