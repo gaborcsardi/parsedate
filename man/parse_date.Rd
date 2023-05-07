@@ -39,7 +39,7 @@ algorithm is the following:
 \code{parse_date} returns quickly in case of empty input elements.
 }
 \details{
-All dates are returned in the UTC time zone. If you preder a different
+All dates are returned in the UTC time zone. If you prefer a different
 time zone, simply use `.POSIXct()` on the result, see examples below.
 }
 \examples{
