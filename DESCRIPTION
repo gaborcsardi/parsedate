@@ -14,5 +14,5 @@ Suggests:
     withr
 URL: https://github.com/gaborcsardi/parsedate
 BugReports: https://github.com/gaborcsardi/parsedate/issues
-RoxygenNote: 6.1.1
+RoxygenNote: 7.2.3
 Encoding: UTF-8
