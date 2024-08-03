@@ -73,3 +73,13 @@ test_that("zero length input (issue #20)", {
     parse_iso_8601(character(0)),
     structure(numeric(0), class = c("POSIXct", "POSIXt"), tzone = "UTC"))
 })
+
+test_that("multiple date formats do not cause a warning (issue #36)", {
+  expect_silent(
+    parse_iso_8601(c("2020-03", "2020"))
+  )
+  expect_equal(
+    parse_iso_8601(c("2020-03", "2020")),
+    as.POSIXct(c("2020-03-01", "2020-01-01"), tz = "UTC")
+  )
+})
