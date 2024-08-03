@@ -35,6 +35,12 @@ with_tz <- function(x, tzone = "") as.POSIXct(as.POSIXlt(x, tz = tzone))
 ymd <- function(x) as.POSIXct(x, format = "%Y %m %d", tz = "UTC")
 yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 
+replace_na_0 <- function(x) {
+  ret <- as.numeric(x)
+  ret[is.na(ret)] <- 0
+  ret
+}
+
 ## --------------------------------------------------------------------
 #' Parse date from any format
 #'
@@ -191,10 +197,6 @@ parse_iso_8601 <- function(dates, default_tz = "UTC") {
 
 parse_iso_parts <- function(mm, default_tz) {
 
-  # Ensure that all fractions use periods rather than commas and are numeric
-  mm$frac <- as.numeric(sub(",", ".", mm$frac))
-  mm$sec <- as.numeric(sub(",", ".", mm$sec))
-
   num <- nrow(mm)
 
   ## Date first ----
@@ -227,32 +229,28 @@ parse_iso_parts <- function(mm, default_tz) {
 
   ## Now the time ----
 
-  th <- mm$hour != ""
-  date[th] <- date[th] + hours(mm$hour[th])
+  # Ensure that all decimals use periods rather than commas
+  mm$frac <- sub(",", ".", mm$frac)
+  mm$sec <- sub(",", ".", mm$sec)
 
-  tm <- mm$min != ""
-  date[tm] <- date[tm] + minutes(mm$min[tm])
-
-  ts <- !is.na(mm$sec)
-  date[ts] <- date[ts] + seconds(mm$sec[ts])
-
-  ## Fractional time ----
-
-  tfs <- !is.na(mm$frac) & !is.na(mm$sec)
-  # only supporting up to millisecond resolution, rounding subsequent digits
-  date[tfs] <- date[tfs] + milliseconds(round(mm$frac[tfs] * 1000))
-
-  tfm <- !is.na(mm$frac) & is.na(mm$sec) & mm$min != ""
-  sec <- trunc(mm$frac[tfm] * 60)
-  # only supporting up to millisecond resolution, rounding subsequent digits
-  mil <- round((mm$frac[tfm] * 60 - sec) * 1000)
-  date[tfm] <- date[tfm] + seconds(sec) + milliseconds(mil)
-
-  tfh <- !is.na(mm$frac) & is.na(mm$sec) & mm$min == ""
-  min <- trunc(mm$frac[tfh] * 60)
-  sec <- trunc((mm$frac[tfh] * 60 - min) * 60)
-  mil <- round((((mm$frac[tfh] * 60) - min) * 60 - sec) * 1000)
-  date[tfh] <- date[tfh] + minutes(min) + seconds(sec) + milliseconds(mil)
+  # Determine the conversion factor for the fraction to seconds
+  frac_mult <-
+    ifelse(
+      mm$sec != "",
+      1,
+      ifelse(
+        mm$min != "",
+        60,
+        3600 # then it's hour
+      )
+    )
+  # Convert all other expected numeric columns to be numeric
+  for (current_col in c("hour", "min", "frac", "sec")) {
+    mm[[current_col]] <- replace_na_0(mm[[current_col]])
+  }
+  # Convert the fraction to seconds based on the precision
+  frac <- mm$frac * frac_mult
+  date <- date + hours(mm$hour) + minutes(mm$min) + milliseconds(round((mm$sec + frac) * 1000))
 
   ## Time zone ----
 
