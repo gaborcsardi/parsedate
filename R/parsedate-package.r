@@ -261,9 +261,9 @@ parse_iso_parts <- function(mm, default_tz) {
   ftzpm <- mm$tzpm != ""
   m <- ifelse(mm$tzpm[ftzpm] == "+", -1, 1)
   ftzpmh <- ftzpm & mm$tzhour != ""
-  date[ftzpmh] <- date[ftzpmh] + m * hours(mm$tzhour[ftzpmh])
+  date[ftzpmh] <- date[ftzpmh] + m[ftzpmh] * hours(mm$tzhour[ftzpmh])
   ftzpmm <- ftzpm & mm$tzmin != ""
-  date[ftzpmm] <- date[ftzpmm] + m * minutes(mm$tzmin[ftzpmm])
+  date[ftzpmm] <- date[ftzpmm] + m[ftzpmm] * minutes(mm$tzmin[ftzpmm])
 
   ftzz <- mm$tz == "Z"
   date[ftzz] <- as.POSIXct(date[ftzz], "UTC")
