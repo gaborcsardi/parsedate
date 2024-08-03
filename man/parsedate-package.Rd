@@ -2,6 +2,7 @@
 % Please edit documentation in R/parsedate-package.r
 \docType{package}
 \name{parsedate-package}
+\alias{parsedate}
 \alias{parsedate-package}
 \title{Parse date from any format, including ISO 8601}
 \description{
@@ -17,4 +18,12 @@ Three useful functions to parse and format dates.
   \item \code{\link{format_iso_8601}} formats a date (and time) in
     a specific ISO 8601 format.
 }
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/gaborcsardi/parsedate}
+  \item Report bugs at \url{https://github.com/gaborcsardi/parsedate/issues}
+}
+
 }

@@ -14,11 +14,10 @@
 #'     a specific ISO 8601 format.
 #' }
 #'
-#' @docType package
 #' @name parsedate-package
 #' @useDynLib parsedate, .registration = TRUE, .fixes = "C_"
 
-NULL
+"_PACKAGE"
 
 ## Some simple utility functions. We used to take them from lubridate,
 ## but that brings in plyr, Rcpp, etc. Better to keep dependencies light.
