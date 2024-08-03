@@ -193,8 +193,7 @@ parse_iso_parts <- function(mm, default_tz) {
 
   num <- nrow(mm)
 
-  ## -----------------------------------------------------------------
-  ## Date first
+  ## Date first ----
 
   date <- .POSIXct(rep(NA_real_, num), tz = "")
 
@@ -222,8 +221,7 @@ parse_iso_parts <- function(mm, default_tz) {
   fy <- is.na(date)
   date[fy] <- ymd(paste(mm$year[fy], "01", "01"))
 
-  ## -----------------------------------------------------------------
-  ## Now the time
+  ## Now the time ----
 
   th <- mm$hour != ""
   date[th] <- date[th] + hours(mm$hour[th])
@@ -234,8 +232,7 @@ parse_iso_parts <- function(mm, default_tz) {
   ts <- mm$sec != ""
   date[ts] <- date[ts] + seconds(mm$sec[ts])
 
-  ## -----------------------------------------------------------------
-  ## Fractional time
+  ## Fractional time ----
 
   frac <- as.numeric(sub(",", ".", mm$frac))
 
@@ -255,8 +252,7 @@ parse_iso_parts <- function(mm, default_tz) {
   mil <- round((((frac[tfh] * 60) - min) * 60 - sec) * 1000)
   date[tfh] <- date[tfh] + minutes(min) + seconds(sec) + milliseconds(mil)
 
-  ## -----------------------------------------------------------------
-  ## Time zone
+  ## Time zone ----
 
   ftzpm <- mm$tzpm != ""
   m <- ifelse(mm$tzpm[ftzpm] == "+", -1, 1)
