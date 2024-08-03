@@ -111,3 +111,26 @@ test_that("capture fractional seconds (issue #44)", {
     as.POSIXct("2024-08-02 20:47:03.123", tz = "UTC")
   )
 })
+
+test_that("capture fractional seconds (issue #44)", {
+  # This test uses unclass() and %% to work around
+  # https://github.com/r-lib/testthat/issues/1977
+  expect_equal(
+    unclass(parse_iso_8601("1970-08-03T01:02:03.123+04:15")) %% 1,
+    unclass(as.POSIXct("1970-08-02 20:47:03.123", tz = "UTC")) %% 1
+  )
+
+  # Test all fractional date/time parts without explicit time zones
+  expect_equal(
+    parse_iso_8601("1970-08-03T01.5"),
+    as.POSIXct("1970-08-03 01:30", tz = "UTC")
+  )
+  expect_equal(
+    parse_iso_8601("1970-08-03T01:02.5"),
+    as.POSIXct("1970-08-03 01:02:30", tz = "UTC")
+  )
+  expect_equal(
+    unclass(parse_iso_8601("1970-08-03T01:02:03.5")) %% 1,
+    unclass(as.POSIXct("1970-08-03 01:02:30.5", tz = "UTC")) %% 1
+  )
+})

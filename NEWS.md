@@ -2,6 +2,7 @@
 
 * Some issues with different formats (e.g. "2000" and "2000-11") could have
   given inaccurate results previously.  Those are now resolved (#36)
+* Breaking change: fractional seconds are now included (#44)
 
 # parsedate 1.3.1
 
