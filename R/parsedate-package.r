@@ -245,7 +245,7 @@ parse_iso_parts <- function(mm, default_tz) {
       )
     )
   # Convert all other expected numeric columns to be numeric
-  for (current_col in c("hour", "min", "frac", "sec")) {
+  for (current_col in c("hour", "min", "frac", "sec", "tzhour", "tzmin")) {
     mm[[current_col]] <- replace_na_0(mm[[current_col]])
   }
   # Convert the fraction to seconds based on the precision
@@ -254,26 +254,25 @@ parse_iso_parts <- function(mm, default_tz) {
 
   ## Time zone ----
 
-  ftzpm <- mm$tzpm != ""
-  m <- ifelse(mm$tzpm[ftzpm] == "+", -1, 1)
-  ftzpmh <- ftzpm & mm$tzhour != ""
-  date[ftzpmh] <- date[ftzpmh] + m * hours(mm$tzhour[ftzpmh])
-  ftzpmm <- ftzpm & mm$tzmin != ""
-  m <- ifelse(mm$tzpm[ftzpmm] == "+", -1, 1)
-  date[ftzpmm] <- date[ftzpmm] + m * minutes(mm$tzmin[ftzpmm])
+  tz_sign <- ifelse(mm$tzpm == "+", -1, 1)
+  tz_value <- tz_sign * (hours(mm$tzhour) + minutes(mm$tzmin))
+  date <- date + tz_value
 
-  ftzz <- mm$tz == "Z"
-  date[ftzz] <- as.POSIXct(date[ftzz], "UTC")
+  tz_assigned <-
+    ifelse(
+      mm$tz %in% c("Z", ""),
+      "UTC",
+      mm$tz
+    )
 
-  ftz <- mm$tz != "Z" & mm$tz != ""
-  date[ftz] <- as.POSIXct(date[ftz], mm$tz[ftz])
+  date <- as.POSIXct(date, tz = tz_assigned)
 
   if (default_tz != "UTC") {
-    ftna <- mm$tzpm == "" & mm$tz == ""
+    ftna <- mm$tz == ""
     if (any(ftna)) {
-      dd <- as.POSIXct(format_iso_8601(date[ftna]),
-                       "%Y-%m-%dT%H:%M:%S+00:00", tz = default_tz)
-      date[ftna] <- dd
+      date[ftna] <-
+        as.POSIXct(format_iso_8601(date[ftna]),
+                   "%Y-%m-%dT%H:%M:%S+00:00", tz = default_tz)
     }
   }
 
