@@ -1,5 +1,4 @@
-
-context("time zones")
+# time zones ----
 
 test_that("output time zone is always UTC", {
   expect_equal(
