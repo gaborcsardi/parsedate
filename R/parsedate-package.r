@@ -280,18 +280,31 @@ parse_iso_parts <- function(mm, default_tz) {
 }
 
 iso_regex <- paste0(
+  # whitespace at the beginning
   "^\\s*",
+  # the year
   "(?<year>[\\+-]?\\d{4}(?!\\d{2}\\b))",
+  # The dash between year and month
   "(?:(?<dash>-?)",
+   # The month
    "(?:(?<month>0[1-9]|1[0-2])",
+    # The dash between month and day, and the day
     "(?:\\g{dash}(?<day>[12]\\d|0[1-9]|3[01]))?",
+    # or the week
     "|W(?<week>[0-4]\\d|5[0-3])(?:-?(?<weekday>[1-7]))?",
+    # or the yearday
     "|(?<yearday>00[1-9]|0[1-9]\\d|[12]\\d{2}|3",
       "(?:[0-5]\\d|6[1-6])))",
+   # the "T" then the hour
    "(?<time>[T\\s](?:(?:(?<hour>[01]\\d|2[0-3])",
+            # the colon then the minute, and allow for the hour:minute to be
+            # specified as "24:00"
             "(?:(?<colon>:?)(?<min>[0-5]\\d))?|24\\:?00)",
+           # the fraction after the minute
            "(?<frac>[\\.,]\\d+(?!:))?)?",
+    # the colon after the minute and the second
     "(?:\\g{colon}(?<sec>[0-5]\\d)(?:[\\.,]\\d+)?)?",
+    # the timezone as "Z" or "+-hh" or "+-hh:mm" or "+-hhmm"
     "(?<tz>[zZ]|(?<tzpm>[\\+-])",
      "(?<tzhour>[01]\\d|2[0-3]):?(?<tzmin>[0-5]\\d)?)?)?)?$"
   )
