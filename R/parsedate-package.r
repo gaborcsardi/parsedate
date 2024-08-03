@@ -220,7 +220,7 @@ parse_iso_parts <- function(mm, default_tz) {
 
   ## Years
   fy <- is.na(date)
-  date[fy] <- ymd(paste(mm$year, "01", "01"))
+  date[fy] <- ymd(paste(mm$year[fy], "01", "01"))
 
   ## -----------------------------------------------------------------
   ## Now the time
@@ -240,10 +240,12 @@ parse_iso_parts <- function(mm, default_tz) {
   frac <- as.numeric(sub(",", ".", mm$frac))
 
   tfs <- !is.na(frac) & mm$sec != ""
+  # only supporting up to millisecond resolution, rounding subsequent digits
   date[tfs] <- date[tfs] + milliseconds(round(frac[tfs] * 1000))
 
   tfm <- !is.na(frac) & mm$sec == "" & mm$min != ""
   sec <- trunc(frac[tfm] * 60)
+  # only supporting up to millisecond resolution, rounding subsequent digits
   mil <- round((frac[tfm] * 60 - sec) * 1000)
   date[tfm] <- date[tfm] + seconds(sec) + milliseconds(mil)
 
