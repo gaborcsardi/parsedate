@@ -9,19 +9,18 @@ status](https://github.com/gaborcsardi/parsedate/workflows/R-CMD-check/badge.svg
 [![CRAN RStudio mirror
 downloads](https://cranlogs.r-pkg.org/badges/parsedate)](https://r-pkg.org/pkg/parsedate)
 [![Codecov test
-coverage](https://codecov.io/gh/gaborcsardi/parsedate/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gaborcsardi/parsedate?branch=main)
-[![R-CMD-check](https://github.com/gaborcsardi/parsedate/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gaborcsardi/parsedate/actions/workflows/R-CMD-check.yaml)
+coverage](https://codecov.io/gh/gaborcsardi/parsedate/graph/badge.svg)](https://app.codecov.io/gh/gaborcsardi/parsedate)
 <!-- badges: end -->
 
 This R package has three functions for dealing with dates.
 
--   `parse_iso_8601` recognizes and parses all valid ISO 8601 date and
-    time formats. It can also be used as an ISO 8601 validator.
--   `parse_date` can parse a date when you don’t know which format it is
-    in. First it tries all ISO 8601 formats. Then it tries git’s
-    versatile date parser. Lastly, it tries `as.POSIXct`.
--   `format_iso_8601` formats a date (and time) in specific ISO 8601
-    format.
+- `parse_iso_8601` recognizes and parses all valid ISO 8601 date and
+  time formats. It can also be used as an ISO 8601 validator.
+- `parse_date` can parse a date when you don’t know which format it is
+  in. First it tries all ISO 8601 formats. Then it tries git’s versatile
+  date parser. Lastly, it tries `as.POSIXct`.
+- `format_iso_8601` formats a date (and time) in specific ISO 8601
+  format.
 
 ## Limitations
 
@@ -39,13 +38,13 @@ parse_date("april 15 1971")
 parse_date("april 15 1969")
 ```
 
-    ## [1] "2022-04-15 UTC"
+    ## [1] "2024-04-15 UTC"
 
 ``` r
 parse_date("april 15 2110")
 ```
 
-    ## [1] "2022-04-15 UTC"
+    ## [1] "2024-04-15 UTC"
 
 ## Parsing ISO 8601 dates
 
@@ -214,13 +213,13 @@ parse_date("11/12/99")
 parse_date("03/20")
 ```
 
-    ## [1] "2022-03-20 UTC"
+    ## [1] "2024-03-20 UTC"
 
 ``` r
 parse_date("12")
 ```
 
-    ## [1] "2022-01-12 UTC"
+    ## [1] "2024-08-12 UTC"
 
 But not for this, because this is ISO 8601.
 
