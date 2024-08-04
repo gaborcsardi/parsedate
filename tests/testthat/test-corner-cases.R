@@ -73,3 +73,64 @@ test_that("zero length input (issue #20)", {
     parse_iso_8601(character(0)),
     structure(numeric(0), class = c("POSIXct", "POSIXt"), tzone = "UTC"))
 })
+
+test_that("multiple date formats do not cause a warning (issue #36)", {
+  expect_silent(
+    parse_iso_8601(c("2020-03", "2020"))
+  )
+  expect_equal(
+    parse_iso_8601(c("2020-03", "2020")),
+    as.POSIXct(c("2020-03-01", "2020-01-01"), tz = "UTC")
+  )
+
+  # a related set of tests that causes a similar issue to #36, but was not
+  # reported in that issue.  This covers when minute and non-minute timezones
+  # are provided at the same time.
+  valid_datetimes <-
+    c(
+      "2024-08-03T01:02:03Z", # Zulu timezone
+      "2024-08-03T01:02:03+00", # Zulu timezone as numeric
+      "2024-08-03T01:02:03-04", # negative hour timezone without minutes
+      "2024-08-03T01:02:03+04", # positive hour timezone without minutes
+      "2024-08-03T01:02:03-04:00", # negative hour timezone with minutes
+      "2024-08-03T01:02:03+04:15", # positive hour timezone with minutes
+      "2024-08-03T01:02:03.123+04:15" # positive hour timezone with minutes and fractional seconds
+    )
+  expect_silent(
+    parse_iso_8601(valid_datetimes)
+  )
+  expect_equal(
+    parse_iso_8601(valid_datetimes),
+    as.POSIXct(c("2024-08-03 01:02:03", "2024-08-03 01:02:03", "2024-08-03 05:02:03", "2024-08-02 21:02:03", "2024-08-03 05:02:03", "2024-08-02 20:47:03", "2024-08-02 20:47:03.123"), tz = "UTC")
+  )
+})
+
+test_that("capture fractional seconds (issue #44)", {
+  expect_equal(
+    parse_iso_8601("2024-08-03T01:02:03.123+04:15"),
+    as.POSIXct("2024-08-02 20:47:03.123", tz = "UTC")
+  )
+})
+
+test_that("capture fractional seconds (issue #44)", {
+  # This test uses unclass() and %% to work around
+  # https://github.com/r-lib/testthat/issues/1977
+  expect_equal(
+    unclass(parse_iso_8601("1970-08-03T01:02:03.123+04:15")) %% 1,
+    unclass(as.POSIXct("1970-08-02 20:47:03.123", tz = "UTC")) %% 1
+  )
+
+  # Test all fractional date/time parts without explicit time zones
+  expect_equal(
+    parse_iso_8601("1970-08-03T01.5"),
+    as.POSIXct("1970-08-03 01:30", tz = "UTC")
+  )
+  expect_equal(
+    parse_iso_8601("1970-08-03T01:02.5"),
+    as.POSIXct("1970-08-03 01:02:30", tz = "UTC")
+  )
+  expect_equal(
+    unclass(parse_iso_8601("1970-08-03T01:02:03.5")) %% 1,
+    unclass(as.POSIXct("1970-08-03 01:02:30.5", tz = "UTC")) %% 1
+  )
+})

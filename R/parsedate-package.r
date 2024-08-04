@@ -191,10 +191,13 @@ parse_iso_8601 <- function(dates, default_tz = "UTC") {
 
 parse_iso_parts <- function(mm, default_tz) {
 
+  # Ensure that all fractions use periods rather than commas and are numeric
+  mm$frac <- as.numeric(sub(",", ".", mm$frac))
+  mm$sec <- as.numeric(sub(",", ".", mm$sec))
+
   num <- nrow(mm)
 
-  ## -----------------------------------------------------------------
-  ## Date first
+  ## Date first ----
 
   date <- .POSIXct(rep(NA_real_, num), tz = "")
 
@@ -220,10 +223,9 @@ parse_iso_parts <- function(mm, default_tz) {
 
   ## Years
   fy <- is.na(date)
-  date[fy] <- ymd(paste(mm$year, "01", "01"))
+  date[fy] <- ymd(paste(mm$year[fy], "01", "01"))
 
-  ## -----------------------------------------------------------------
-  ## Now the time
+  ## Now the time ----
 
   th <- mm$hour != ""
   date[th] <- date[th] + hours(mm$hour[th])
@@ -231,36 +233,35 @@ parse_iso_parts <- function(mm, default_tz) {
   tm <- mm$min != ""
   date[tm] <- date[tm] + minutes(mm$min[tm])
 
-  ts <- mm$sec != ""
+  ts <- !is.na(mm$sec)
   date[ts] <- date[ts] + seconds(mm$sec[ts])
 
-  ## -----------------------------------------------------------------
-  ## Fractional time
+  ## Fractional time ----
 
-  frac <- as.numeric(sub(",", ".", mm$frac))
+  tfs <- !is.na(mm$frac) & !is.na(mm$sec)
+  # only supporting up to millisecond resolution, rounding subsequent digits
+  date[tfs] <- date[tfs] + milliseconds(round(mm$frac[tfs] * 1000))
 
-  tfs <- !is.na(frac) & mm$sec != ""
-  date[tfs] <- date[tfs] + milliseconds(round(frac[tfs] * 1000))
-
-  tfm <- !is.na(frac) & mm$sec == "" & mm$min != ""
-  sec <- trunc(frac[tfm] * 60)
-  mil <- round((frac[tfm] * 60 - sec) * 1000)
+  tfm <- !is.na(mm$frac) & is.na(mm$sec) & mm$min != ""
+  sec <- trunc(mm$frac[tfm] * 60)
+  # only supporting up to millisecond resolution, rounding subsequent digits
+  mil <- round((mm$frac[tfm] * 60 - sec) * 1000)
   date[tfm] <- date[tfm] + seconds(sec) + milliseconds(mil)
 
-  tfh <- !is.na(frac) & mm$sec == "" & mm$min == ""
-  min <- trunc(frac[tfh] * 60)
-  sec <- trunc((frac[tfh] * 60 - min) * 60)
-  mil <- round((((frac[tfh] * 60) - min) * 60 - sec) * 1000)
+  tfh <- !is.na(mm$frac) & is.na(mm$sec) & mm$min == ""
+  min <- trunc(mm$frac[tfh] * 60)
+  sec <- trunc((mm$frac[tfh] * 60 - min) * 60)
+  mil <- round((((mm$frac[tfh] * 60) - min) * 60 - sec) * 1000)
   date[tfh] <- date[tfh] + minutes(min) + seconds(sec) + milliseconds(mil)
 
-  ## -----------------------------------------------------------------
-  ## Time zone
+  ## Time zone ----
 
   ftzpm <- mm$tzpm != ""
   m <- ifelse(mm$tzpm[ftzpm] == "+", -1, 1)
   ftzpmh <- ftzpm & mm$tzhour != ""
   date[ftzpmh] <- date[ftzpmh] + m * hours(mm$tzhour[ftzpmh])
   ftzpmm <- ftzpm & mm$tzmin != ""
+  m <- ifelse(mm$tzpm[ftzpmm] == "+", -1, 1)
   date[ftzpmm] <- date[ftzpmm] + m * minutes(mm$tzmin[ftzpmm])
 
   ftzz <- mm$tz == "Z"
@@ -282,18 +283,31 @@ parse_iso_parts <- function(mm, default_tz) {
 }
 
 iso_regex <- paste0(
+  # whitespace at the beginning
   "^\\s*",
+  # the year
   "(?<year>[\\+-]?\\d{4}(?!\\d{2}\\b))",
+  # The dash between year and month
   "(?:(?<dash>-?)",
+   # The month
    "(?:(?<month>0[1-9]|1[0-2])",
+    # The dash between month and day, and the day
     "(?:\\g{dash}(?<day>[12]\\d|0[1-9]|3[01]))?",
+    # or the week
     "|W(?<week>[0-4]\\d|5[0-3])(?:-?(?<weekday>[1-7]))?",
+    # or the yearday
     "|(?<yearday>00[1-9]|0[1-9]\\d|[12]\\d{2}|3",
       "(?:[0-5]\\d|6[1-6])))",
+   # the "T" then the hour
    "(?<time>[T\\s](?:(?:(?<hour>[01]\\d|2[0-3])",
+            # the colon then the minute, and allow for the hour:minute to be
+            # specified as "24:00"
             "(?:(?<colon>:?)(?<min>[0-5]\\d))?|24\\:?00)",
+           # the fraction after the minute
            "(?<frac>[\\.,]\\d+(?!:))?)?",
-    "(?:\\g{colon}(?<sec>[0-5]\\d)(?:[\\.,]\\d+)?)?",
+    # the colon after the minute and the second with its optional fraction
+    "(?:\\g{colon}(?<sec>[0-5]\\d(?:[\\.,]\\d+)?))?",
+    # the timezone as "Z" or "+-hh" or "+-hh:mm" or "+-hhmm"
     "(?<tz>[zZ]|(?<tzpm>[\\+-])",
      "(?<tzhour>[01]\\d|2[0-3]):?(?<tzmin>[0-5]\\d)?)?)?)?$"
   )
