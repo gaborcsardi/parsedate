@@ -1,5 +1,4 @@
-
-context("Dates and empty strings")
+# Dates and empty strings ----
 
 test_that("Bug #10 is fixed", {
 
@@ -21,7 +20,7 @@ test_that("Empty strings are replaced by NAs", {
   actual <- parse_date(dates)
 
   expect_equal(expected, actual)
-  
+
 })
 
 test_that("White-space string is replaced by NAs", {
@@ -31,7 +30,7 @@ test_that("White-space string is replaced by NAs", {
   actual <- parse_date(date)
 
   expect_equal(expected, actual)
-  
+
 })
 
 test_that("White-spaces are gracefully removed", {
@@ -41,18 +40,18 @@ test_that("White-spaces are gracefully removed", {
   actual <- parse_date(date)
 
   expect_equal(expected, actual)
-  
+
 })
 
 
 test_that("Non-sensical input is removed", {
-  
+
   date <- "?=)(!$§#$%"
   expected <- .POSIXct(NA_real_, "UTC")
   actual <- parse_date(date)
-  
+
   expect_equal(expected, actual)
-  
+
 })
 
 test_that("Approx parameter is passed on", {

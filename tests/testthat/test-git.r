@@ -1,5 +1,4 @@
-
-context("Git dates")
+# Git dates ----
 
 test_that("Filling in is correct", {
 
@@ -30,7 +29,7 @@ test_that("Issue #3 is resolved", {
   d1 <- parse_date("20070809 14:35:42")
   d2 <- parse_date("2007-08-09 14:35:42")
   expect_equal(d1, d2)
-  
+
 })
 
 test_that("Issue #4 is resolved", {
