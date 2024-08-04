@@ -1,30 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/format_iso_8601.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/parse_date.html</loc>
-  </url>
-  <url>
-    <loc>/reference/parse_iso_8601.html</loc>
-  </url>
-  <url>
-    <loc>/reference/parsedate-package.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/format_iso_8601.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/parse_date.html</loc></url>
+<url><loc>/reference/parse_iso_8601.html</loc></url>
+<url><loc>/reference/parsedate-package.html</loc></url>
 </urlset>
+
