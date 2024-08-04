@@ -35,6 +35,12 @@ with_tz <- function(x, tzone = "") as.POSIXct(as.POSIXlt(x, tz = tzone))
 ymd <- function(x) as.POSIXct(x, format = "%Y %m %d", tz = "UTC")
 yj <- function(x) as.POSIXct(x, format = "%Y %j", tz = "UTC")
 
+replace_na_0 <- function(x) {
+  ret <- as.numeric(x)
+  ret[is.na(ret)] <- 0
+  ret
+}
+
 ## --------------------------------------------------------------------
 #' Parse date from any format
 #'
@@ -193,8 +199,7 @@ parse_iso_parts <- function(mm, default_tz) {
 
   num <- nrow(mm)
 
-  ## -----------------------------------------------------------------
-  ## Date first
+  ## Date first ----
 
   date <- .POSIXct(rep(NA_real_, num), tz = "")
 
@@ -220,61 +225,54 @@ parse_iso_parts <- function(mm, default_tz) {
 
   ## Years
   fy <- is.na(date)
-  date[fy] <- ymd(paste(mm$year, "01", "01"))
+  date[fy] <- ymd(paste(mm$year[fy], "01", "01"))
 
-  ## -----------------------------------------------------------------
-  ## Now the time
+  ## Now the time ----
 
-  th <- mm$hour != ""
-  date[th] <- date[th] + hours(mm$hour[th])
+  # Ensure that all decimals use periods rather than commas
+  mm$frac <- sub(",", ".", mm$frac)
+  mm$sec <- sub(",", ".", mm$sec)
 
-  tm <- mm$min != ""
-  date[tm] <- date[tm] + minutes(mm$min[tm])
+  # Determine the conversion factor for the fraction to seconds
+  frac_mult <-
+    ifelse(
+      mm$sec != "",
+      1,
+      ifelse(
+        mm$min != "",
+        60,
+        3600 # then it's hour
+      )
+    )
+  # Convert all other expected numeric columns to be numeric
+  for (current_col in c("hour", "min", "frac", "sec", "tzhour", "tzmin")) {
+    mm[[current_col]] <- replace_na_0(mm[[current_col]])
+  }
+  # Convert the fraction to seconds based on the precision
+  frac <- mm$frac * frac_mult
+  date <- date + hours(mm$hour) + minutes(mm$min) + milliseconds(round((mm$sec + frac) * 1000))
 
-  ts <- mm$sec != ""
-  date[ts] <- date[ts] + seconds(mm$sec[ts])
+  ## Time zone ----
 
-  ## -----------------------------------------------------------------
-  ## Fractional time
+  tz_sign <- ifelse(mm$tzpm == "+", -1, 1)
+  tz_value <- tz_sign * (hours(mm$tzhour) + minutes(mm$tzmin))
+  date <- date + tz_value
 
-  frac <- as.numeric(sub(",", ".", mm$frac))
+  tz_assigned <-
+    ifelse(
+      mm$tz %in% c("Z", ""),
+      "UTC",
+      mm$tz
+    )
 
-  tfs <- !is.na(frac) & mm$sec != ""
-  date[tfs] <- date[tfs] + milliseconds(round(frac[tfs] * 1000))
-
-  tfm <- !is.na(frac) & mm$sec == "" & mm$min != ""
-  sec <- trunc(frac[tfm] * 60)
-  mil <- round((frac[tfm] * 60 - sec) * 1000)
-  date[tfm] <- date[tfm] + seconds(sec) + milliseconds(mil)
-
-  tfh <- !is.na(frac) & mm$sec == "" & mm$min == ""
-  min <- trunc(frac[tfh] * 60)
-  sec <- trunc((frac[tfh] * 60 - min) * 60)
-  mil <- round((((frac[tfh] * 60) - min) * 60 - sec) * 1000)
-  date[tfh] <- date[tfh] + minutes(min) + seconds(sec) + milliseconds(mil)
-
-  ## -----------------------------------------------------------------
-  ## Time zone
-
-  ftzpm <- mm$tzpm != ""
-  m <- ifelse(mm$tzpm[ftzpm] == "+", -1, 1)
-  ftzpmh <- ftzpm & mm$tzhour != ""
-  date[ftzpmh] <- date[ftzpmh] + m * hours(mm$tzhour[ftzpmh])
-  ftzpmm <- ftzpm & mm$tzmin != ""
-  date[ftzpmm] <- date[ftzpmm] + m * minutes(mm$tzmin[ftzpmm])
-
-  ftzz <- mm$tz == "Z"
-  date[ftzz] <- as.POSIXct(date[ftzz], "UTC")
-
-  ftz <- mm$tz != "Z" & mm$tz != ""
-  date[ftz] <- as.POSIXct(date[ftz], mm$tz[ftz])
+  date <- as.POSIXct(date, tz = tz_assigned)
 
   if (default_tz != "UTC") {
-    ftna <- mm$tzpm == "" & mm$tz == ""
+    ftna <- mm$tz == ""
     if (any(ftna)) {
-      dd <- as.POSIXct(format_iso_8601(date[ftna]),
-                       "%Y-%m-%dT%H:%M:%S+00:00", tz = default_tz)
-      date[ftna] <- dd
+      date[ftna] <-
+        as.POSIXct(format_iso_8601(date[ftna]),
+                   "%Y-%m-%dT%H:%M:%S+00:00", tz = default_tz)
     }
   }
 
@@ -282,18 +280,31 @@ parse_iso_parts <- function(mm, default_tz) {
 }
 
 iso_regex <- paste0(
+  # whitespace at the beginning
   "^\\s*",
+  # the year
   "(?<year>[\\+-]?\\d{4}(?!\\d{2}\\b))",
+  # The dash between year and month
   "(?:(?<dash>-?)",
+   # The month
    "(?:(?<month>0[1-9]|1[0-2])",
+    # The dash between month and day, and the day
     "(?:\\g{dash}(?<day>[12]\\d|0[1-9]|3[01]))?",
+    # or the week
     "|W(?<week>[0-4]\\d|5[0-3])(?:-?(?<weekday>[1-7]))?",
+    # or the yearday
     "|(?<yearday>00[1-9]|0[1-9]\\d|[12]\\d{2}|3",
       "(?:[0-5]\\d|6[1-6])))",
+   # the "T" then the hour
    "(?<time>[T\\s](?:(?:(?<hour>[01]\\d|2[0-3])",
+            # the colon then the minute, and allow for the hour:minute to be
+            # specified as "24:00"
             "(?:(?<colon>:?)(?<min>[0-5]\\d))?|24\\:?00)",
+           # the fraction after the minute
            "(?<frac>[\\.,]\\d+(?!:))?)?",
-    "(?:\\g{colon}(?<sec>[0-5]\\d)(?:[\\.,]\\d+)?)?",
+    # the colon after the minute and the second with its optional fraction
+    "(?:\\g{colon}(?<sec>[0-5]\\d(?:[\\.,]\\d+)?))?",
+    # the timezone as "Z" or "+-hh" or "+-hh:mm" or "+-hhmm"
     "(?<tz>[zZ]|(?<tzpm>[\\+-])",
      "(?<tzhour>[01]\\d|2[0-3]):?(?<tzmin>[0-5]\\d)?)?)?)?$"
   )
