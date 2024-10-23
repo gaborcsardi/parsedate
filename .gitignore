@@ -1,4 +1,6 @@
 /tags
 /src/*.o
+/src/parsedate.dll
 /src/parsedate.so
 /revdep
+.Rhistory
