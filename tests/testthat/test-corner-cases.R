@@ -73,3 +73,11 @@ test_that("zero length input (issue #20)", {
     parse_iso_8601(character(0)),
     structure(numeric(0), class = c("POSIXct", "POSIXt"), tzone = "UTC"))
 })
+
+test_that("fractional seconds are captured (#44)", {
+  expect_equal(
+    parse_iso_8601("2024-08-03T01:02:03.123+04:15"),
+    as.POSIXct("2024-08-02 20:47:03.123", tz = "UTC"),
+    tolerance = 0
+  )
+})

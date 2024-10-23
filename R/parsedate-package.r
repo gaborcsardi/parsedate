@@ -282,21 +282,32 @@ parse_iso_parts <- function(mm, default_tz) {
 }
 
 iso_regex <- paste0(
+  # strip initial spaces
   "^\\s*",
+  # capture the year
   "(?<year>[\\+-]?\\d{4}(?!\\d{2}\\b))",
   "(?:(?<dash>-?)",
-   "(?:(?<month>0[1-9]|1[0-2])",
-    "(?:\\g{dash}(?<day>[12]\\d|0[1-9]|3[01]))?",
-    "|W(?<week>[0-4]\\d|5[0-3])(?:-?(?<weekday>[1-7]))?",
-    "|(?<yearday>00[1-9]|0[1-9]\\d|[12]\\d{2}|3",
-      "(?:[0-5]\\d|6[1-6])))",
-   "(?<time>[T\\s](?:(?:(?<hour>[01]\\d|2[0-3])",
-            "(?:(?<colon>:?)(?<min>[0-5]\\d))?|24\\:?00)",
-           "(?<frac>[\\.,]\\d+(?!:))?)?",
-    "(?:\\g{colon}(?<sec>[0-5]\\d)(?:[\\.,]\\d+)?)?",
-    "(?<tz>[zZ]|(?<tzpm>[\\+-])",
-     "(?<tzhour>[01]\\d|2[0-3]):?(?<tzmin>[0-5]\\d)?)?)?)?$"
-  )
+  # capture the month
+  "(?:(?<month>0[1-9]|1[0-2])",
+  # capture the day
+  "(?:\\g{dash}(?<day>[12]\\d|0[1-9]|3[01]))?",
+  # capture the week or weekday
+  "|W(?<week>[0-4]\\d|5[0-3])(?:-?(?<weekday>[1-7]))?",
+  # capture the yearday
+  "|(?<yearday>00[1-9]|0[1-9]\\d|[12]\\d{2}|3",
+  "(?:[0-5]\\d|6[1-6])))",
+  # capture the time (overall) including the hour
+  "(?<time>[T\\s](?:(?:(?<hour>[01]\\d|2[0-3])",
+  # capture the minute, allowing for 24:00 as the time
+  "(?:(?<colon>:?)(?<min>[0-5]\\d))?|24\\:?00)",
+  # capture fractional minutes or fractional hours
+  "(?<frac>[\\.,]\\d+(?!:))?)?",
+  # capture the second
+  "(?:\\g{colon}(?<sec>[0-5]\\d)(?:[\\.,]\\d+)?)?",
+  # capture the time zone
+  "(?<tz>[zZ]|(?<tzpm>[\\+-])",
+  "(?<tzhour>[01]\\d|2[0-3]):?(?<tzmin>[0-5]\\d)?)?)?)?$"
+)
 
 iso_week <- function(year, week, weekday) {
 
