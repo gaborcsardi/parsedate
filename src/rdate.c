@@ -7,7 +7,8 @@
 
 SEXP R_parse_date(SEXP chr, SEXP approx) {
   int i, no_dates = LENGTH(chr);
-  SEXP result, *chr_ptr, class;
+  const SEXP *chr_ptr;
+  SEXP result, class;
   unsigned long timestamp;
   int *result_ptr;
   int approx_;
@@ -20,7 +21,7 @@ SEXP R_parse_date(SEXP chr, SEXP approx) {
     error("approx must the logical of length 1");
   }
 
-  chr_ptr = STRING_PTR(chr);
+  chr_ptr = STRING_PTR_RO(chr);
   approx_ = LOGICAL(approx)[0];
 
   PROTECT(result = NEW_INTEGER(no_dates));
