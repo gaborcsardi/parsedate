@@ -1,4 +1,4 @@
-# parsedate (development version)
+# parsedate 1.3.2
 
 No user visible changes.
 
