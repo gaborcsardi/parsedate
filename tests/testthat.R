@@ -9,16 +9,15 @@
 library(testthat)
 library(parsedate)
 
-test_check("parsedate")
-
-# Package-specific modifications below here
-
-run <- function(tz) {
-  source("testthat/helper.R")
-  withr::local_timezone(tz)
+if (Sys.getenv("NOT_CRAN") == "true") {
   test_check("parsedate")
+
+  run <- function(tz) {
+    source("testthat/helper.R")
+    withr::local_timezone(tz)
+    test_check("parsedate")
+  }
+
+  run("CET")
+  run("US/Pacific")
 }
-
-run("CET")
-
-run("US/Pacific")
